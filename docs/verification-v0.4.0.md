@@ -1,5 +1,9 @@
 # Verification — v0.4.0 / Phase 7
 
+[Documentation](README.md) · [All verification reports](verification.md) · [Current roadmap](roadmap.md)
+
+> Historical verification snapshot. Results and validation gaps below apply to this version; use the current roadmap for project-wide status.
+
 Date: 2026-10-27. Windows 11 x64 build 26200; .NET SDK 10.0.403. Playwright 1.64.1; isolated Chrome for Testing 156.0.8078.4 (Chromium engine).
 
 ## Evidence
@@ -18,4 +22,4 @@ The end-to-end browser run uses isolated Chromium, not personal Chrome or Edge p
 
 The browser workspace feature restores HTTP/HTTPS URLs in a new window. It does not restore login state, browser history, form data or page scroll position. Incognito is disabled. Live tab metadata is memory-only; explicitly saved URLs are plaintext local data ignored by Git. Page-level scripting/media control and arbitrary OS commands are not supported.
 
-See flowweb.md for setup/removal, permission scope, local data locations and repeatable tests. Existing notification/fullscreen/focus behavior retains its previously documented OS and hardware limits.
+See [FlowWeb](flowweb.md) for setup/removal, permission scope, local data locations and repeatable tests. Existing notification/fullscreen/focus behavior retains its previously documented OS and hardware limits.

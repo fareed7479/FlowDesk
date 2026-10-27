@@ -1,24 +1,27 @@
-# Phase 0 environment audit
+# Phase 0 audit record
 
-Target: D:\PROJECTS\FlowDesk
-Date: 2026-10-27
+[Phase 0 guide](phases/phase-0.md) · [Current setup](getting-started.md)
 
-- Selected project directory exists and is empty.
-- Windows x64, OS build 26200, release 25H2. Registry ProductName reports a legacy Windows 10 label.
-- Git 2.50.0 is available.
-- dotnet, MSBuild, winapp and WinGet were not found on PATH.
-- Standard Visual Studio, .NET and Windows SDK locations were not found.
-- D: has approximately 551 GiB free.
-- CIM OS query was denied; registry and runtime checks were used instead.
-- No application has been built or runtime-tested.
-- No GitHub repository access or publishing has been authorized.
+Audit date: **2026-10-27**. This is a historical environment record, not the current project status.
 
-## Initial scope
+## Initial observations
 
-v0.1.0: modular C# core, Win32 window inventory and positioning, split layout, JSON workspace save/restore, WinUI FlowControl and tray entry point. Validate pure layout behavior and then native behavior on Windows. Later phases cover Stage Manager, Mission Control, FlowDock, notifications, focus/fullscreen and optional FlowWeb extension.
+- The selected project directory on D: was empty.
+- Windows x64 reported build 26200, release 25H2. The registry product label was inconsistent with the Windows 11 build.
+- Git 2.50.0 was available.
+- .NET, MSBuild, winapp, and WinGet were not found on PATH; standard Visual Studio/SDK locations were not found.
+- D: had sufficient space for project-local tools and caches.
+- The audit used runtime/registry observations where system inventory queries were unavailable.
+- At this point no app had been built or runtime-tested.
 
-## Development setup
+## Subsequent setup and outcome
 
-Use project-local .tools and .cache directories on D: where possible. Obtain the .NET 10 SDK from the official Microsoft installer. Additional WinUI build prerequisites must be confirmed before claiming build support. No machine-wide development settings will be changed by the local SDK setup.
+A project-local .NET SDK 10.0.403 and NuGet cache were established under ignored `.tools\` and `.cache\` directories. The first WinUI/native prototype was then built and tested; see [v0.1.0 verification](verification-v0.1.0.md).
 
-Official setup reference: https://learn.microsoft.com/en-us/windows/apps/get-started/start-here?tabs=stable
+The SDK CLI's initial run reported creating an ASP.NET development certificate; it was not explicitly trusted. No other machine-wide developer settings were intentionally changed by that local setup.
+
+Later authorized repository commits and application phases are recorded in the [release history](../CHANGELOG.md). Initial audit observations do not imply those features or repository permissions remain absent.
+
+## Reproduction boundary
+
+This audit describes one development machine. A new clone does not contain the SDK or caches, and clean-machine provisioning remains unqualified. Follow [getting started](getting-started.md) and Microsoft's [WinUI setup](https://learn.microsoft.com/en-us/windows/apps/get-started/start-here) for preparation.

@@ -1,5 +1,9 @@
 # Verification — v0.3.0
 
+[Documentation](README.md) · [All verification reports](verification.md) · [Current roadmap](roadmap.md)
+
+> Historical verification snapshot. Results and validation gaps below apply to this version; use the current roadmap for project-wide status.
+
 Date: 2026-10-27. Windows 11 x64 build 26200. Project-local .NET SDK 10.0.403; Windows App SDK 1.8.260921001.
 
 ## Build and automated checks

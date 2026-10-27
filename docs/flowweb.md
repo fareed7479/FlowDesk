@@ -1,10 +1,12 @@
 # FlowWeb setup and usage
 
+[Documentation](README.md) · [Phase 7](phases/phase-7.md) · [Prerequisites](getting-started.md)
+
 FlowWeb is an optional Windows Chrome/Edge extension for FlowDesk v0.4.0. It shares web-tab metadata only after you connect, and exposes activate, mute and pin controls plus named browser tab workspaces.
 
 ## Setup
 
-Use PowerShell 7 (`pwsh`) from the FlowDesk repository:
+Complete the [desktop prerequisites](getting-started.md) first, including the local SDK. Then use PowerShell 7 (`pwsh`) from the FlowDesk repository:
 
 ```powershell
 pwsh -ExecutionPolicy Bypass -File .\scripts\build.ps1
@@ -12,7 +14,7 @@ pwsh -ExecutionPolicy Bypass -File .\scripts\install-flowweb.ps1
 pwsh -ExecutionPolicy Bypass -File .\scripts\run.ps1
 ```
 
-The installer registers `com.flowdesk.flowweb` under the current user's Chrome and Edge native messaging host keys. The executable and generated manifest stay on D: in the project. It refuses to replace a registration owned by another application. The host is self-contained; it does not need a system-wide .NET installation.
+The installer registers `com.flowdesk.flowweb` under the current user's Chrome and Edge native messaging host keys. The executable and generated manifest stay in the project on its drive. It refuses to replace a registration owned by another application. The host is self-contained; it does not need a system-wide .NET installation.
 
 Load the extension manually in each browser you want to connect:
 
@@ -57,7 +59,7 @@ This removes only matching FlowWeb native host registrations. Remove the unpacke
 
 ## Repeatable tests
 
-Node.js and PowerShell 7 are required. Test dependencies and browser downloads stay under `.tools` and `.cache` on D:.
+Node.js and PowerShell 7 are required. Test dependencies and browser downloads stay under `.tools` and `.cache` on the repository drive.
 
 ```powershell
 pwsh -ExecutionPolicy Bypass -File .\scripts\setup-flowweb-tests.ps1

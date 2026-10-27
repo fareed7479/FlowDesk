@@ -1,5 +1,9 @@
 # Verification — v0.1.1
 
+[Documentation](README.md) · [All verification reports](verification.md) · [Current roadmap](roadmap.md)
+
+> Historical verification snapshot. Results and validation gaps below apply to this version; use the current roadmap for project-wide status.
+
 2026-10-27, Windows 11 x64 build 26200, project-local .NET SDK 10.0.403.
 
 Build: passed with zero warnings/errors. All 18 assertion checks passed. Two separate temporary WinForms processes provided controlled test windows. Native rectangles were read back from the OS after split, undo and preview/apply restore. A closed window was skipped when applying a stale preview. No existing user windows were moved by this integration test.
