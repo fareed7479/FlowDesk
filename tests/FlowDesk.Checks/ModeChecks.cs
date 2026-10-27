@@ -23,6 +23,7 @@ internal static class ModeChecks {
             check(NotificationCenter.ActivationUri("flowdesk-control://notification/"+id.ToString("N"))==id && NotificationCenter.ActivationUri("https://notification/"+id.ToString("N")) is null && NotificationCenter.ActivationUri("flowdesk-control://notification/"+id.ToString("N")+"?execute=x") is null,"notification protocol rejects other schemes and injected parameters");
             check(NotificationCenter.ActivationCommandLine("app.exe --notification-uri \"flowdesk-control://notification/"+id.ToString("N")+"\"")==id && NotificationCenter.ActivationCommandLine("--notification-uri flowdesk-control://notification/"+id.ToString("N")+" extra") is null,"notification command line accepts only a complete validated URI");
             loaded.Clear();check(loaded.State.Items.Length==0 && new NotificationCenter(path,sink).State.Items.Length==0,"notification clear persists");
+            File.WriteAllText(path,System.Text.Json.JsonSerializer.Serialize(new NoticeState(99,new(),[])));var unsupported=new NotificationCenter(path,sink);unsupported.Publish("Unsaved","Preserve schema");check(unsupported.StorageError is not null && File.ReadAllText(path).Contains("99"),"unsupported notification schemas are preserved without startup failure");
             File.WriteAllText(path,"{broken");var corrupt=new NotificationCenter(path,sink);corrupt.Publish("Unsaved","History remains protected");check(corrupt.StorageError is not null && File.ReadAllText(path)=="{broken","invalid notification storage is preserved");
         } finally {if(File.Exists(path))File.Delete(path);}
     }
@@ -54,6 +55,7 @@ internal static class ModeChecks {
             DesktopWindow? target=null;for(int i=0;i<50 && target is null;i++){target=service.Enumerate().SingleOrDefault(w=>w.Title==title);if(target is null)Thread.Sleep(100);}
             check(target is not null,"focus target-close fixture detected");modes.Start(target!,[fixtures[1]],[],1,false);process.CloseMainWindow();process.WaitForExit(2000);
             check(modes.ShouldEnd(DateTimeOffset.UtcNow),"closing focus target requests session restoration");result=modes.End();check(result.Skipped==1 && !service.IsMinimized(fixtures[1]),"closed target is skipped while distractions are restored");
+            File.WriteAllText(path,System.Text.Json.JsonSerializer.Serialize(new ModeJournal(99,"Focus",0,null,[])));var unsupportedJournal=new DesktopModes(service,path);check(unsupportedJournal.RecoveryError is not null && unsupportedJournal.IsActive,"unsupported recovery schemas block mutations without startup failure");
             File.WriteAllText(path,"{broken");var invalid=new DesktopModes(service,path);check(invalid.IsActive && invalid.RecoveryError is not null && invalid.End().Errors.Length==1,"corrupt recovery journal blocks new mutations");
         } finally {modes.End();SetWindowLongPtr(fixtures[0].Handle,-16,(nint)style);SetWindowText(fixtures[0].Handle,fixtures[0].Title);for(int i=0;i<fixtures.Length;i++)if(service.Resolve(fixtures[i]) is not null)service.RestoreState(fixtures[i],initial[i]);if(File.Exists(path))File.Delete(path);}
     }

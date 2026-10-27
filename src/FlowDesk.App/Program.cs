@@ -9,7 +9,7 @@ using Microsoft.Windows.AppNotifications;
 namespace FlowDesk.App;
 internal static class Program {
     internal static readonly NativeNotifications Notifications=new();
-    internal static bool DesktopChecks,RecoveryCheck,HotkeyCheck,ToastProbe;
+    internal static bool FlowWebChecks,DesktopChecks,RecoveryCheck,HotkeyCheck,ToastProbe;
     internal static string TestPrefix="";
     internal static string DataDirectory=Path.Combine(AppContext.BaseDirectory,"data");
     internal static AppActivationArguments? InitialActivation;
@@ -22,6 +22,8 @@ internal static class Program {
             if(!RequestedNotice.HasValue)return 2;
             args=Array.Empty<string>(); // External URIs cannot select development/test commands.
         }
+        FlowWebChecks=args.Contains("--flowweb-checks");
+        if(FlowWebChecks)DataDirectory=Path.Combine(ProjectRoot(),".cache","flowweb-desktop-data");
         DesktopChecks=args.Contains("--desktop-checks");HotkeyCheck=args.Contains("--hotkey-check");ToastProbe=args.Contains("--toast-activation-probe");
         if(HotkeyCheck)DataDirectory=Path.Combine(ProjectRoot(),".cache","hotkey-check-data");
         if(DesktopChecks) DataDirectory=Path.Combine(ProjectRoot(),".cache","desktop-checks-data");
@@ -33,7 +35,7 @@ internal static class Program {
         Notifications.Register();
         if(args.Contains("--cleanup-activation-probe")){int result=InteractionChecks.CleanupProbe();Notifications.Dispose();return result;}
         try{InitialActivation=AppInstance.GetCurrent().GetActivatedEventArgs();}catch(TimeoutException){InitialActivation=null;}
-        var instance=AppInstance.FindOrRegisterForKey(RecoveryCheck?"FlowDesk.RecoveryChecks":HotkeyCheck?"FlowDesk.HotkeyChecks":DesktopChecks?"FlowDesk.DesktopChecks":"FlowDesk.Main");
+        var instance=AppInstance.FindOrRegisterForKey(FlowWebChecks?"FlowDesk.FlowWebChecks":RecoveryCheck?"FlowDesk.RecoveryChecks":HotkeyCheck?"FlowDesk.HotkeyChecks":DesktopChecks?"FlowDesk.DesktopChecks":"FlowDesk.Main");
         if(!instance.IsCurrent) {if(InitialActivation is not null)instance.RedirectActivationToAsync(InitialActivation).AsTask().GetAwaiter().GetResult();Notifications.Dispose();return 0;}
         instance.Activated+=(_,activation)=>Route(activation);
         var ui=new Thread(()=>Application.Start(initialization=>{

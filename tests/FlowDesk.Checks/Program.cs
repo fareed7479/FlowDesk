@@ -25,6 +25,7 @@ var path=Path.Combine(AppContext.BaseDirectory,"workspace-test.json");
 try { Workspaces.Save(path,saved); Check(Workspaces.Load(path).Windows[0]==saved.Windows[0],"workspace JSON roundtrip"); } finally { if(File.Exists(path)) File.Delete(path); }
 NextPhaseChecks.Library(Check,saved);
 ModeChecks.Notifications(Check);
+await FlowWebChecks.Run(Check);
 if(args.Contains("--native")) {
     var service=new WindowService(); var inventory=service.Enumerate();
     Console.WriteLine($"Native inventory returned {inventory.Count} windows (titles omitted).");

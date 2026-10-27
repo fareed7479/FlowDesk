@@ -23,7 +23,7 @@ public sealed class NotificationCenter {
                 var state=JsonSerializer.Deserialize<NoticeState>(File.ReadAllText(path)) ?? throw new InvalidDataException("Empty notification storage.");
                 Validate(state); State=state;
             }
-        } catch(Exception ex) when(ex is IOException or UnauthorizedAccessException or JsonException) {readOnly=true;StorageError=ex.Message;}
+        } catch(Exception ex) when(ex is InvalidDataException or IOException or UnauthorizedAccessException or JsonException) {readOnly=true;StorageError=ex.Message;}
     }
     private static void Validate(NoticeState s) {
         if(s.Schema!=1 || s.Preferences is null || s.Items is null || s.Items.Length>100 || (s.Preferences.ExcludedApps?.Length??0)>100 || s.Preferences.ExcludedApps?.Any(x=>string.IsNullOrWhiteSpace(x))==true || s.Items.Any(n=>n is null || n.Id==Guid.Empty || n.Title is null || n.Message is null || n.Title.Length>200 || n.Message.Length>2000 || n.Delivery is null) || s.Items.Select(n=>n.Id).Distinct().Count()!=s.Items.Length) throw new InvalidDataException("Unsupported notification storage.");
@@ -33,7 +33,7 @@ public sealed class NotificationCenter {
             try {
                 Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
                 File.WriteAllText(path+".tmp",JsonSerializer.Serialize(State));File.Move(path+".tmp",path,true);StorageError=null;
-            } catch(Exception ex) when(ex is IOException or UnauthorizedAccessException) {StorageError=ex.Message;}
+            } catch(Exception ex) when(ex is InvalidDataException or IOException or UnauthorizedAccessException) {StorageError=ex.Message;}
         }
         Changed?.Invoke();
     }

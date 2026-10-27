@@ -20,7 +20,7 @@ public sealed class DesktopModes {
                 if(j.Schema!=1 || j.Kind is not ("Focus" or "Fullscreen") || j.Windows is null || j.Windows.Length is <1 or >32 || j.Windows.Any(w=>w is null || w.Identity is null || w.Placement is null || w.Bounds is null || w.Identity.Handle==0 || w.Identity.ProcessId<1 || w.Identity.ProcessStarted<1 || string.IsNullOrWhiteSpace(w.Identity.ProcessPath) || w.Identity.Marker is null || !w.Identity.Marker.StartsWith("FlowDesk.Mode.",StringComparison.Ordinal) || !Guid.TryParseExact(w.Identity.Marker[14..],"N",out _) || w.Placement.NormalBounds is null || w.Placement.NormalBounds.Width<1 || w.Placement.NormalBounds.Height<1)) throw new InvalidDataException("Unsupported recovery journal; preserve it for manual recovery.");
                 Session=j;
             }
-        } catch(Exception ex) when(ex is IOException or UnauthorizedAccessException or JsonException) {RecoveryError=ex.Message;unreadable=true;}
+        } catch(Exception ex) when(ex is InvalidDataException or IOException or UnauthorizedAccessException or JsonException) {RecoveryError=ex.Message;unreadable=true;}
     }
     private void Save() {
         if(Session is null) {if(File.Exists(path)) File.Delete(path);return;}
@@ -47,14 +47,14 @@ public sealed class DesktopModes {
     public ModeResult End() {
         if(unreadable) return new(0,0,[RecoveryError!]);
         RecoveryError=null;
-        if(Session is null) {try{Save();return new(0,0,[]);}catch(Exception ex) when(ex is IOException or UnauthorizedAccessException){RecoveryError=ex.Message;return new(0,0,[ex.Message]);}}
+        if(Session is null) {try{Save();return new(0,0,[]);}catch(Exception ex) when(ex is InvalidDataException or IOException or UnauthorizedAccessException){RecoveryError=ex.Message;return new(0,0,[ex.Message]);}}
         int restored=0,skipped=0;var errors=new List<string>();var pending=new List<ManagedSnapshot>();
         foreach(var snapshot in Session.Windows) {
             try {if(service.RestoreManaged(snapshot)) restored++;else skipped++;}
             catch(Exception ex) when(ex is System.ComponentModel.Win32Exception or InvalidOperationException or ArgumentException) {pending.Add(snapshot);errors.Add(ex.Message);}
         }
         Session=pending.Count==0?null:Session with {Windows=pending.ToArray()};
-        try {Save();} catch(Exception ex) when(ex is IOException or UnauthorizedAccessException) {RecoveryError=ex.Message;errors.Add(ex.Message);}
+        try {Save();} catch(Exception ex) when(ex is InvalidDataException or IOException or UnauthorizedAccessException) {RecoveryError=ex.Message;errors.Add(ex.Message);}
         return new(restored,skipped,errors.ToArray());
     }
     public bool ShouldEnd(DateTimeOffset now) => Session is not null && ((Session.Ends.HasValue && now>=Session.Ends.Value) || !Session.Windows.Any(w=>w.Identity.Handle==Session.Target && service.ResolveManaged(w.Identity) is not null));

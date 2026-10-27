@@ -2,6 +2,8 @@
   <Folder Name="/src/">
     <Project Path="src/FlowDesk.App/FlowDesk.App.csproj" />
     <Project Path="src/FlowDesk.Core/FlowDesk.Core.csproj" />
+    <Project Path="src/FlowDesk.FlowWeb/FlowDesk.FlowWeb.csproj" />
+    <Project Path="src/FlowDesk.FlowWebHost/FlowDesk.FlowWebHost.csproj" />
     <Project Path="src/FlowDesk.Windows/FlowDesk.Windows.csproj" />
   </Folder>
   <Folder Name="/tests/">

@@ -1,0 +1,22 @@
+{
+  "action": {
+    "default_title": "FlowWeb",
+    "default_popup": "popup.html"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyNoKNlSpmWODmbh3NfPFLFR/rv8blTYDmG7YGHGJ6cGCYKdfFyZRUqUQFd5H/MzUVyK65pWIoGQ1Ft8sRmRbC1/9MboKYf/tvDiDZiapl9TSGmUcGY/aIuWOdgOoaJc/DCmk6yhrVlO7qluxmc7ktJHe7LwkWEWCBuA6IAngLDgvlFQ2lR9mZmyzHCC59xp4Tz5Uyh0EKV/U8KYhA2TqzthwtDjHMuCHawSgWyRJhr33+cEIyWXHgrbW//sFrTEaCztbSXwV7zeHte+yhtgokytIXImgHR95ibKz95/gFMeU4tenpnTRPUA5BpvygbHroMkhJyOw6bniBQyZ9+LKeQIDAQAB",
+  "version": "0.4.0",
+  "background": {
+    "type": "module",
+    "service_worker": "background.js"
+  },
+  "minimum_chrome_version": "120",
+  "manifest_version": 3,
+  "incognito": "not_allowed",
+  "name": "FlowDesk FlowWeb",
+  "permissions": [
+    "nativeMessaging",
+    "tabs",
+    "storage"
+  ],
+  "description": "Connect selected browser controls and tab workspaces to your local FlowDesk app."
+}

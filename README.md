@@ -1,6 +1,6 @@
-# FlowDesk v0.3.0
+# FlowDesk v0.4.0
 
-Native C# / WinUI 3 desktop experience for Windows 11 x64. This development release adds FlowDesk notifications and recoverable fullscreen/focus sessions to the existing layouts, workspaces, Stage Manager and desktop overview.
+Native C# / WinUI 3 desktop experience for Windows 11 x64. This development release adds optional Chrome/Edge FlowWeb integration to the existing notifications, fullscreen/focus, workspaces, Stage Manager and desktop overview.
 
 ## Run
 
@@ -32,6 +32,13 @@ Only selected distractions participate. Focus and fullscreen quiet FlowDesk bann
 
 Before changing windows, FlowDesk writes a recovery journal. If the app exits unexpectedly, the next startup attempts restoration automatically. A unique property on each managed HWND, plus process identity and start time, prevents recovery from acting on a recycled handle. Document-title changes are supported. Missing/closed windows are skipped; failed restores remain available for retry. Normal close and programmatic close both attempt restoration. If the recovery shortcut is already occupied, new external sessions are blocked with a visible explanation.
 
+## FlowWeb — Phase 7
+
+The optional Manifest V3 extension connects Chrome/Edge web tabs to the FlowWeb tab in FlowDesk. Enable the desktop bridge, then Connect & share tabs in the extension popup. Activate, mute/unmute or pin/unpin a selected web tab from FlowDesk. Save selected tab URLs as a named browser workspace; confirmed restoration opens those tabs in a new browser window.
+
+The extension requests native messaging, tabs and storage permissions. Sharing is opt-in for the live connection and covers standard HTTP/HTTPS tabs; incognito is disabled. Disconnection clears the live desktop snapshot. Saving a workspace explicitly persists its URLs in local plaintext. Connections use a pinned extension origin, a rotated pairing token, current-user named pipes, bounded versioned frames and an action whitelist.
+
+Start with [FlowWeb setup and usage](docs/flowweb.md). Developer loading into personal Chrome/Edge profiles is manual. The installer registers only FlowWeb's own per-user native host; it does not install an extension into a browser profile. Store publication remains part of distribution work.
 ## Earlier features
 
 - FlowControl: window inventory, 1–4 column splits, single-workspace save, restore preview and one-step layout undo.
@@ -41,7 +48,7 @@ Before changing windows, FlowDesk writes a recovery journal. If the app exits un
 
 ## Verification
 
-See [v0.3.0 verification](docs/verification-v0.3.0.md) and the [phase matrix](docs/roadmap.md). The implementation is tested on Windows 11 x64 build 26200 with temporary fixture windows; no existing user windows are moved by the test suites.
+See [v0.4.0 verification](docs/verification-v0.4.0.md) and the [phase matrix](docs/roadmap.md). The implementation is tested on Windows 11 x64 build 26200 with temporary fixture windows; no existing user windows are moved by the test suites.
 
 - `scripts/build.ps1`: controller/native assertions.
 - `scripts/verify-desktop.ps1`: actual WinUI controls, Windows notification history, one-minute timer, process restart recovery and app-close restoration. Requires an unlocked interactive desktop and a closed FlowDesk instance.

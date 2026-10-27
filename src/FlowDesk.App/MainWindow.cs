@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Controls;
 namespace FlowDesk.App;
 public sealed class MainWindow : Window {
     internal readonly NotificationCenter NoticeCenter;
+    internal readonly FlowWebView WebPanel;
     internal readonly DesktopModes Modes;
     internal readonly ModesView ModePanel;
     internal readonly NotificationsView NoticePanel;
@@ -37,7 +38,7 @@ public sealed class MainWindow : Window {
         Modes=new DesktopModes(service,Path.Combine(Program.DataDirectory,"mode-recovery.json"));
         ModesView? modePanel=null;
         recoveryHotkey=new RecoveryHotkey(()=>{modePanel?.EndSession("Session ended by shortcut");if(AppWindow.Presenter.Kind==Microsoft.UI.Windowing.AppWindowPresenterKind.FullScreen)ToggleShellFullscreen();BringForward();});
-        Title="FlowDesk • FlowControl v0.3.0";
+        Title="FlowDesk • FlowControl v0.4.0";
         AppWindow.Resize(new global::Windows.Graphics.SizeInt32(850,750));
         var panel=new StackPanel { Padding=new Thickness(24), Spacing=12 };
         panel.Children.Add(new TextBlock { Text="FlowControl",FontSize=28 });
@@ -75,13 +76,14 @@ public sealed class MainWindow : Window {
         });
         Add(restoreActions,"Settings",()=>Process.Start(new ProcessStartInfo("ms-settings:"){UseShellExecute=true}));
         panel.Children.Add(restoreActions); panel.Children.Add(previewText); panel.Children.Add(status);
-        panel.Children.Add(new TextBlock { Text="Named workspaces, Stage Manager and the window overview are available in the other tabs. Notifications and fullscreen/focus are available in their tabs. FlowWeb is planned.",TextWrapping=TextWrapping.Wrap });
+        panel.Children.Add(new TextBlock { Text="Named workspaces, Stage Manager and the window overview are available in the other tabs. Notifications and fullscreen/focus are available in their tabs. FlowWeb is available in its tab.",TextWrapping=TextWrapping.Wrap });
         var history=new List<string>();
         var shellStatus=new TextBlock {Text="Ready",TextWrapping=TextWrapping.Wrap,Margin=new Thickness(16)};
         var activity=new ListView();
         void Report(string message) { shellStatus.Text=message; history.Insert(0,$"{DateTime.Now:HH:mm:ss}  {message}"); if(history.Count>100) history.RemoveAt(history.Count-1); activity.ItemsSource=history.ToArray(); NoticeCenter.Publish("FlowDesk",message.Length>2000?message[..2000]:message); }
         var workspaceView=new WorkspaceView(service,controller,Report,()=>Modes.IsActive);
         var tabs=Tabs;
+        WebPanel=new FlowWebView(()=>Modes.IsActive);
         ModePanel=modePanel=new ModesView(service,Modes,NoticeCenter,()=>workspaceView.Stage.IsActive,()=>recoveryHotkey.Available,ToggleShellFullscreen);
         NoticePanel=new NotificationsView(NoticeCenter,Program.Notifications);
         noticeTab=new TabViewItem {Header=$"Notifications ({NoticeCenter.Unread})",IsClosable=false,Content=NoticePanel};
@@ -92,12 +94,13 @@ public sealed class MainWindow : Window {
         tabs.TabItems.Add(new TabViewItem {Header="Focus & fullscreen",IsClosable=false,Content=ModePanel});
         tabs.TabItems.Add(noticeTab);
         tabs.TabItems.Add(new TabViewItem {Header="Activity",IsClosable=false,Content=activity});
+        tabs.TabItems.Add(new TabViewItem{Header="FlowWeb",IsClosable=false,Content=WebPanel});
         var shell=new Grid(); shell.RowDefinitions.Add(new RowDefinition {Height=new GridLength(1,GridUnitType.Star)}); shell.RowDefinitions.Add(new RowDefinition {Height=GridLength.Auto});
         shell.Children.Add(tabs); Grid.SetRow(shellStatus,1); shell.Children.Add(shellStatus); Content=shell;
         AppWindow.Closing+=(_,e)=>{ if(Modes.IsActive){ModePanel.EndSession("Session ended on close");if(Modes.Session is not null){e.Cancel=true;return;}} if(workspaceView.Stage.IsActive) { var result=workspaceView.Stage.Leave(); if(workspaceView.Stage.IsActive) {e.Cancel=true; Report("Could not restore all staged windows. Try Leave Stage before closing. "+string.Join(" ",result.Errors));} } };
         tray=new System.Windows.Forms.NotifyIcon { Icon=System.Drawing.SystemIcons.Application,Text="FlowDesk — double-click to open",Visible=true };
         tray.DoubleClick+=(_,_)=>DispatcherQueue.TryEnqueue(()=>Activate());
-        Closed+=(_,_)=>{if(Modes.Session is not null)ModePanel.EndSession("Session restored on window close");ModePanel.Dispose();recoveryHotkey.Dispose();tray.Dispose();}; Refresh();
+        Closed+=(_,_)=>{if(Modes.Session is not null)ModePanel.EndSession("Session restored on window close");WebPanel.Dispose();ModePanel.Dispose();recoveryHotkey.Dispose();tray.Dispose();}; Refresh();
     }
     private void ClearPreview() { preview=null; previewText.Text="Preview a saved workspace before applying it."; }
     private void ShowResult(MoveResult result) { status.Text=$"Position requests: {result.Applied}; skipped: {result.Skipped}; errors: {result.Errors.Count}. Apps may enforce their own sizes."+(result.Errors.Count>0 ? "\n"+string.Join("\n",result.Errors):""); }
