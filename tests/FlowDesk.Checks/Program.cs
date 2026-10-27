@@ -18,6 +18,9 @@ Check(invalid,"empty selection rejected");
 var a=new DesktopWindow(1,42,"C:\\test.exe","Test",new(0,0,400,300));
 var saved=Workspaces.Capture([a]);
 Check(Workspaces.Match(saved.Windows[0],[a,a]) is null,"ambiguous identities skipped");
+var planned=RestorePlanner.Create(new Workspace(1,[saved.Windows[0],saved.Windows[0],new("missing","Absent",new(0,0,100,100))]),[a],_=>new(0,0,1920,1080));
+Check(planned.Moves.Count==1 && planned.Skipped==2,"restore preview skips duplicates and missing windows");
+Check(a.Bounds==new Rect(0,0,400,300),"restore planning leaves input unchanged");
 var path=Path.Combine(AppContext.BaseDirectory,"workspace-test.json");
 try { Workspaces.Save(path,saved); Check(Workspaces.Load(path).Windows[0]==saved.Windows[0],"workspace JSON roundtrip"); } finally { if(File.Exists(path)) File.Delete(path); }
 if(args.Contains("--native")) {
@@ -43,17 +46,27 @@ if(args.Contains("--movement")) {
         }
         Check(fixtures.Length==2,"two controlled native test windows detected");
         var before=Workspaces.Capture(fixtures);
-        var targets=Layouts.Columns(service.WorkArea(fixtures[0].Handle),2);
-        for(int i=0;i<2;i++) service.Move(fixtures[i],targets[i]);
+        var controller=new WorkspaceController(service);
+var plan=controller.Preview(before);
+Check(plan.Moves.Count==2 && plan.Skipped==0,"native restore preview matches test windows");
+var targets=Layouts.Columns(service.WorkArea(fixtures[0].Handle),2);
+        var applied=controller.Apply(new RestorePlan(fixtures.Select((w,i)=>new PlannedMove(w,targets[i])).ToArray(),0));
+Check(applied.Applied==2 && applied.Errors.Count==0 && controller.CanUndo,"controller records successful split for undo");
         Thread.Sleep(250);
         var after=service.Enumerate();
         Check(fixtures.Select((w,i)=>after.Single(x=>x.Handle==w.Handle).Bounds==targets[i]).All(x=>x),"native split positions verified from OS");
-        foreach(var savedWindow in before.Windows) {
-            var match=Workspaces.Match(savedWindow,service.Enumerate())!;
-            service.Move(match,savedWindow.Bounds);
-        }
+        var undone=controller.Undo();
+        Check(undone.Applied==2 && !controller.CanUndo,"undo consumes successful operation");
         Thread.Sleep(250);
-        Check(before.Windows.All(w=>Workspaces.Match(w,service.Enumerate())?.Bounds==w.Bounds),"native workspace rectangle restoration verified from OS");
+        Check(before.Windows.All(w=>Workspaces.Match(w,service.Enumerate())?.Bounds==w.Bounds),"native undo rectangles verified from OS");
+        foreach(var fixture in service.Enumerate().Where(w=>w.Title.StartsWith(prefix,StringComparison.Ordinal))) service.Move(fixture,new Rect(200,200,500,400));
+        var restoreResult=controller.Apply(plan);
+        Check(restoreResult.Applied==2 && restoreResult.Errors.Count==0,"preview plan applies after windows move");
+        Thread.Sleep(250);
+        Check(before.Windows.All(w=>Workspaces.Match(w,service.Enumerate())?.Bounds==w.Bounds),"preview restore rectangles verified from OS");
+        processes[0].CloseMainWindow(); processes[0].WaitForExit(2000);
+        var stale=controller.Apply(plan);
+        Check(stale.Applied==1 && stale.Skipped==1,"stale preview skips closed window");
     } finally {
         foreach(var process in processes) {
             if(!process.HasExited) { process.CloseMainWindow(); if(!process.WaitForExit(2000)) process.Kill(); }
