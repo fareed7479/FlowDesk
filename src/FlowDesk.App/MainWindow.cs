@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using FlowDesk.Core;
@@ -18,7 +19,7 @@ public sealed class MainWindow : Window {
     private readonly string workspace=Path.Combine(AppContext.BaseDirectory,"data","workspace.json");
     public MainWindow() {
         controller=new(service);
-        Title="FlowDesk • FlowControl v0.1.1";
+        Title="FlowDesk • FlowControl v0.2.0";
         AppWindow.Resize(new global::Windows.Graphics.SizeInt32(850,750));
         var panel=new StackPanel { Padding=new Thickness(24), Spacing=12 };
         panel.Children.Add(new TextBlock { Text="FlowControl",FontSize=28 });
@@ -56,8 +57,20 @@ public sealed class MainWindow : Window {
         });
         Add(restoreActions,"Settings",()=>Process.Start(new ProcessStartInfo("ms-settings:"){UseShellExecute=true}));
         panel.Children.Add(restoreActions); panel.Children.Add(previewText); panel.Children.Add(status);
-        panel.Children.Add(new TextBlock { Text="Stage Manager, Mission Control, FlowDock, notification integration and FlowWeb are planned.",TextWrapping=TextWrapping.Wrap });
-        Content=new ScrollViewer { Content=panel,VerticalScrollBarVisibility=ScrollBarVisibility.Auto };
+        panel.Children.Add(new TextBlock { Text="Named workspaces, Stage Manager and the window overview are available in the other tabs. Notification integration and FlowWeb are planned.",TextWrapping=TextWrapping.Wrap });
+        var history=new List<string>();
+        var shellStatus=new TextBlock {Text="Ready",TextWrapping=TextWrapping.Wrap,Margin=new Thickness(16)};
+        var activity=new ListView();
+        void Report(string message) { shellStatus.Text=message; history.Insert(0,$"{DateTime.Now:HH:mm:ss}  {message}"); if(history.Count>100) history.RemoveAt(history.Count-1); activity.ItemsSource=history.ToArray(); }
+        var workspaceView=new WorkspaceView(service,controller,Report);
+        var tabs=new TabView {IsAddTabButtonVisible=false};
+        tabs.TabItems.Add(new TabViewItem {Header="FlowControl",IsClosable=false,Content=new ScrollViewer {Content=panel}});
+        tabs.TabItems.Add(new TabViewItem {Header="Workspaces & Stage",IsClosable=false,Content=workspaceView});
+        tabs.TabItems.Add(new TabViewItem {Header="Overview & FlowDock",IsClosable=false,Content=new DesktopOverviewView(service,Report)});
+        tabs.TabItems.Add(new TabViewItem {Header="Activity",IsClosable=false,Content=activity});
+        var shell=new Grid(); shell.RowDefinitions.Add(new RowDefinition {Height=new GridLength(1,GridUnitType.Star)}); shell.RowDefinitions.Add(new RowDefinition {Height=GridLength.Auto});
+        shell.Children.Add(tabs); Grid.SetRow(shellStatus,1); shell.Children.Add(shellStatus); Content=shell;
+        AppWindow.Closing+=(_,e)=>{ if(workspaceView.Stage.IsActive) { var result=workspaceView.Stage.Leave(); if(workspaceView.Stage.IsActive) {e.Cancel=true; Report("Could not restore all staged windows. Try Leave Stage before closing. "+string.Join(" ",result.Errors));} } };
         tray=new System.Windows.Forms.NotifyIcon { Icon=System.Drawing.SystemIcons.Application,Text="FlowDesk — double-click to open",Visible=true };
         tray.DoubleClick+=(_,_)=>DispatcherQueue.TryEnqueue(()=>Activate());
         Closed+=(_,_)=>tray.Dispose(); Refresh();

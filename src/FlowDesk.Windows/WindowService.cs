@@ -4,12 +4,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using FlowDesk.Core;
 namespace FlowDesk.Windows;
-public sealed class WindowService {
+public sealed partial class WindowService {
     public IReadOnlyList<DesktopWindow> Enumerate() {
         var result=new List<DesktopWindow>();
         Native.EnumProc callback=(h,_)=>{
             try {
                 if(!Native.IsWindowVisible(h) || Native.GetWindow(h,4)!=0 || h==Native.GetShellWindow()) return true;
+                if((Native.ExtendedStyles(h) & 0x08000080L)!=0) return true;
                 if(Native.DwmGetWindowAttribute(h,14,out int cloaked,4)==0 && cloaked!=0) return true;
                 var title=new StringBuilder(1024); Native.GetWindowText(h,title,title.Capacity);
                 if(title.Length==0 || !Native.GetWindowRect(h,out var r)) return true;
@@ -38,7 +39,7 @@ public sealed class WindowService {
         if(!Native.SetWindowPos(window.Handle,0,bounds.X,bounds.Y,bounds.Width,bounds.Height,0x0014)) throw new Win32Exception(Marshal.GetLastWin32Error());
     }
 }
-internal static class Native {
+internal static partial class Native {
     internal delegate bool EnumProc(nint h,nint p);
     [StructLayout(LayoutKind.Sequential)] internal struct R { public int Left,Top,Right,Bottom; }
     [StructLayout(LayoutKind.Sequential)] internal struct MonitorInfo { public int Size; public R Monitor,Work; public uint Flags; }

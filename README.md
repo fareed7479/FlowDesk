@@ -1,32 +1,53 @@
-# FlowDesk v0.1.1 prototype
+# FlowDesk v0.2.0
 
-Native C# / WinUI 3 FlowControl with a separate pure core and Win32 integration layer. Windows 11 x64 is the initial target. This is an early prototype, not a replacement Windows shell.
+A native C# / WinUI 3 desktop experience prototype for Windows 11 x64. Core logic, Windows interop, UI and executable checks are separate projects. This is an early application, not a replacement Windows shell.
 
-## Build and run
+## Run locally
 
-The project-local .NET SDK is in `.tools/dotnet`. Run `powershell -ExecutionPolicy Bypass -File scripts/build.ps1` to build and run the checks, or add `-Run` to launch FlowControl. Dependencies and CLI state stay under `.cache` on D:. First restore requires network access. WinUI XAML compilation may require additional Windows build tools; see docs/phase-0-audit.md for actual results.
+Run `powershell -ExecutionPolicy Bypass -File scripts/build.ps1` to build and execute checks, then `powershell -ExecutionPolicy Bypass -File scripts/run.ps1` to launch. Close FlowDesk before rebuilding. The selected development environment uses a project-local .NET SDK 10.0.403 in `.tools/dotnet`, with NuGet and CLI state in `.cache` on D:. These tools and build outputs are excluded from Git.
 
-## Prototype interaction
+A fresh clone needs the .NET SDK installed into `.tools/dotnet` or the script paths adjusted to an existing SDK. Follow Microsoft's setup documentation linked below. First restore needs network access. The verified development environment builds without a full Visual Studio installation; other environments may need WinUI build prerequisites.
 
-Refresh lists visible, titled, non-owned, non-cloaked windows accessible to this process. Select one to four and click Split to place them in columns on the first selected window's monitor. Save persists current selected window rectangles. Preview restore shows matched windows and target rectangles. Apply restore rechecks identities and skips closed, changed or ambiguous windows. Undo restores rectangles from the last successful split or restore; history lasts only for the current session. Targets are clamped to the current monitor for restore and undo. Windows are never launched automatically. Settings opens Windows Settings. Tray double-click opens FlowControl; closing the window exits and removes the tray icon.
+## Available prototype features
 
-## Limitations
+- **FlowControl:** refresh accessible desktop windows, split 1–4 selections into columns, save a single workspace, preview/apply restoration, and undo the last successful layout operation.
+- **Named workspaces:** create, replace and remove named groups; preview and restore a selected group. Names must be unique. A legacy single workspace is imported when the library is first created.
+- **Stage Manager:** activate saved groups. Previously staged windows outside the requested group are minimized; unrelated windows are left alone. Shared members stay visible. Leave Stage restores original placement, including minimized/maximized state. Normal app close attempts restoration and is cancelled if restoration errors leave tracked windows pending.
+- **Mission Control overview:** a searchable list of current window titles and app names. Click a window to request activation. Refresh updates the inventory.
+- **FlowDock panel:** running apps grouped by executable path; repeated clicks cycle through their current windows. This panel lives inside FlowControl.
+- **Activity:** an in-memory history of workspace, stage and overview messages, capped at 100 entries. This is not a Windows notification listener.
+- **Tray:** double-click requests opening FlowControl. Closing the app exits it; it does not keep running in the tray.
 
-- Restore is conservative: changed document titles cannot match. No window state (maximized/minimized), browser tabs, process launching or historical monitor topology restoration yet.
-- Protected/elevated applications may be inaccessible. No elevation bypass. Apps can enforce minimum sizes or ignore positioning. Rectangle calculations use native window bounds, including non-client borders; no invisible-border correction yet.
-- Split and restore can partially complete if a window disappears or refuses a move; no transactional rollback yet.
-- Workspace JSON stores titles and executable paths locally in the app output data directory. Do not publish this file; build output and data are ignored by Git.
-- No auto-start, global shortcuts, settings toggles, notification interception, fullscreen management or browser extension yet.
-- No package signing, installer or release qualification yet. Native interaction needs manual testing across DPI, displays, taskbar placement and protected apps.
+## Trying the new features
 
-## Modules and next phases
+1. In Workspaces & Stage, enter a name, select current windows, then Save new. Restore minimized windows before saving a group layout.
+2. Select a saved group and Preview; Apply restore sends the planned positioning requests.
+3. Select Stage group to enter/switch groups. Only windows from groups activated during this session participate in minimization. Leave Stage restores their original placement.
+4. In Overview & FlowDock, search by title/app name or use the running-app buttons. Refresh after opening or closing apps.
 
-Core: geometry, layouts, workspace schema and matching. Windows: documented Win32 APIs. App: WinUI FlowControl and a WinForms tray icon. Checks: executable assertion harness and read-only native smoke checks.
+## Verification and limits
 
-Implemented next increment: restore preview and one-step undo. Next: monitor/DPI and window-state persistence; Stage Manager grouping; Mission Control overview; FlowDock; supported notification and focus APIs; optional permission-scoped Chrome/Edge FlowWeb bridge. Each feature requires an independently verified increment.
+The solution builds with zero warnings/errors and passes 34 assertions on Windows 11 x64 build 26200. Native tests use separate temporary windows and read placement back from Windows. See [v0.2.0 verification](docs/verification-v0.2.0.md) for the exact tested scope.
 
-GitHub: https://github.com/fareed7479/FlowDesk — publishing authorized by the repository owner on 2026-10-27. See docs/verification-v0.1.0.md for tested scope.
+- Window matching uses exact executable path and title. Missing, changed or ambiguous identities are skipped. Windows are not launched automatically. Protected/elevated apps may be inaccessible; there is no elevation bypass.
+- Tool windows, no-activate overlays, owned windows, untitled windows, shell windows, cloaked windows and FlowDesk's own windows are excluded from inventory.
+- Some apps enforce their own sizes or ignore requests. Operations can partially succeed. Status counts indicate successful API requests. Windows may decline foreground activation.
+- Stage switching uses minimize/restore, not hidden windows, virtual desktops or shell replacement. State is held in memory; crash/forced-termination recovery is not implemented. Changed titles can prevent restoration; minimized windows remain accessible from the taskbar.
+- Stage exit restores show state and placement. Ordinary workspace restore and layout undo still restore rectangles only. Undo is one level deep and lasts for the current session.
+- Workspace JSON next to the executable in `data/` contains titles and executable paths. Back it up before cleaning build output. It is ignored by Git. An unreadable library is not silently overwritten.
+- Live thumbnails, virtual desktops, pinned-app launching, floating/auto-hide dock, global shortcuts, automatic inventory updates, notification integration, fullscreen/focus modes, FlowWeb and startup registration are not implemented.
+- Mixed DPI, multiple monitors/topology changes, unresponsive apps, protected apps, tray interactions and packaging/signing need broader validation. Native operations currently run on the UI thread, so slow applications can delay the interface.
 
-References: https://learn.microsoft.com/en-us/windows/apps/get-started/start-here • https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enumwindows • https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowpos • https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/nf-dwmapi-dwmgetwindowattribute
+## Phase status
 
-Launch an existing build with `powershell -ExecutionPolicy Bypass -File scripts/run.ps1`. Close FlowDesk before rebuilding. Verification for this increment: docs/verification-v0.1.1.md.
+Phase 0 environment audit and Phase 1 layout/workspace prototype are complete within their documented test scope. This increment adds basic Stage Manager and named groups plus the first Mission Control/FlowDock panels. These are initial implementations, not completed macOS-style feature parity. See [roadmap](docs/roadmap.md) for remaining phases.
+
+GitHub: https://github.com/fareed7479/FlowDesk — repository publishing authorized by the owner.
+
+## Official references
+
+- [WinUI development setup](https://learn.microsoft.com/en-us/windows/apps/get-started/start-here)
+- [GetWindowPlacement](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getwindowplacement)
+- [SetWindowPlacement](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowplacement)
+- [Extended window styles](https://learn.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles)
+- [SetForegroundWindow](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setforegroundwindow)

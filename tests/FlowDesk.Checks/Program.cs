@@ -23,6 +23,7 @@ Check(planned.Moves.Count==1 && planned.Skipped==2,"restore preview skips duplic
 Check(a.Bounds==new Rect(0,0,400,300),"restore planning leaves input unchanged");
 var path=Path.Combine(AppContext.BaseDirectory,"workspace-test.json");
 try { Workspaces.Save(path,saved); Check(Workspaces.Load(path).Windows[0]==saved.Windows[0],"workspace JSON roundtrip"); } finally { if(File.Exists(path)) File.Delete(path); }
+NextPhaseChecks.Library(Check,saved);
 if(args.Contains("--native")) {
     var service=new WindowService(); var inventory=service.Enumerate();
     Console.WriteLine($"Native inventory returned {inventory.Count} windows (titles omitted).");
@@ -64,6 +65,7 @@ Check(applied.Applied==2 && applied.Errors.Count==0 && controller.CanUndo,"contr
         Check(restoreResult.Applied==2 && restoreResult.Errors.Count==0,"preview plan applies after windows move");
         Thread.Sleep(250);
         Check(before.Windows.All(w=>Workspaces.Match(w,service.Enumerate())?.Bounds==w.Bounds),"preview restore rectangles verified from OS");
+        NextPhaseChecks.Stage(Check,service,fixtures,processes);
         processes[0].CloseMainWindow(); processes[0].WaitForExit(2000);
         var stale=controller.Apply(plan);
         Check(stale.Applied==1 && stale.Skipped==1,"stale preview skips closed window");
