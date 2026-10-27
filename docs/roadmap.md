@@ -1,25 +1,23 @@
-# Roadmap
+# Phase matrix — v0.3.0
 
-## Established foundation
+Phase numbering follows the feature phases described in the project chat. Completion always refers to the explicitly documented development scope, not release qualification or parity with another operating system.
 
-- Phase 0: environment audit; local SDK/runtime and caches on D:.
-- Phase 1: WinUI shell/tray, Win32 inventory and positioning, split layouts, workspace save/restore, preview and one-step undo.
+| Phase | Scope | Status |
+| --- | --- | --- |
+| 0 | Windows environment audit and local SDK/cache setup | Complete |
+| 1 | Native inventory/positioning, splits, workspace save/restore, preview, undo | Prototype complete |
+| 2 | Named workspaces and Stage Manager | Basic implementation; advanced visual grouping and durable stage recovery remain |
+| 3 | Mission Control | Title-based searchable overview; live thumbnails and monitor organization remain |
+| 4 | FlowDock | Running-app panel and cycling; floating/auto-hide dock and user-selected pins remain |
+| 5 | FlowDesk notifications | Implemented: persistent center, read/unread/filter/dismiss/clear, optional native banners/sound, delivery states, validated notification links and single-instance activation |
+| 6 | Fullscreen/focus behavior | Implemented: borderless target fullscreen, FlowDesk presenter, timed selected-distraction focus, app exclusions, quiet FlowDesk notifications, end/close/target-exit restoration, global recovery shortcut and startup journal recovery |
+| 7 | Optional Chrome/Edge FlowWeb | Pending |
+| 8 | Distribution | Signing, installer, startup opt-in, update strategy and release qualification pending |
 
-## This increment: v0.2.0
+Phase 5 covers the application's own notifications. Cross-app notification access would be separate work with explicit Windows permission boundaries. Phase 6 manages selected desktop windows and FlowDesk banner delivery; it does not change system-wide Do Not Disturb or security/privacy settings.
 
-- Named workspace library with validation and local persistence.
-- Basic Stage Manager group switching, inactive-group minimization, shared members, and session exit restoring original window placement.
-- Mission Control title-based searchable window overview.
-- FlowDock running-app panel with window cycling.
-- In-app activity history and native placement/activation APIs.
+## Further work
 
-## Next increments
+Finish earlier visual experiences with documented DWM thumbnails, monitor organization and an optional floating FlowDock. Add event-driven inventory updates and move potentially blocking native calls off the UI thread. Extend mixed-DPI, multi-monitor, protected-app and unresponsive-app compatibility coverage. Keep optional browser integration permission-scoped and validate native messaging/origins. Package and sign only after broader release tests.
 
-1. Finish UI workflow validation and improve responsiveness; add event-driven inventory updates, accessibility checks, multi-monitor/DPI coverage and crash recovery for staged windows.
-2. Expand Mission Control with documented DWM thumbnails, visual grouping and monitor organization. Do not promise undocumented virtual-desktop APIs.
-3. Expand FlowDock into an optional floating, auto-hide surface with user-selected pins and reliable focus behavior.
-4. Add FlowControl system setting integrations through supported APIs; add an app notification service and explicit permission boundaries for any Windows notification access. Implement focus/fullscreen behavior with reliable restoration and per-app exclusions.
-5. Build the optional Chrome/Edge FlowWeb extension with explicit permissions, versioned messages, validated native messaging and origin restrictions.
-6. Packaging, signing, installer/update strategy, startup opt-in, release testing and wider hardware coverage.
-
-Each increment must document actual build, test and manual results. No Windows security/privacy settings or unsupported shell hooks are required for the current prototype.
+See verification-v0.3.0.md for actual test evidence and remaining validation boundaries.

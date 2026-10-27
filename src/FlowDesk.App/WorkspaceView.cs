@@ -8,9 +8,10 @@ using Microsoft.UI.Xaml.Controls;
 namespace FlowDesk.App;
 public sealed class WorkspaceView : UserControl {
     private readonly WindowService service;
+    private readonly Func<bool> blocked;
     private readonly WorkspaceController controller;
     private readonly Action<string> report;
-    private readonly string path=Path.Combine(AppContext.BaseDirectory,"data","library.json");
+    private readonly string path=Path.Combine(Program.DataDirectory,"library.json");
     private WorkspaceLibrary? library;
     private readonly ListView groups=new() {Height=180,SelectionMode=ListViewSelectionMode.Single};
     private readonly ListView members=new() {Height=220,SelectionMode=ListViewSelectionMode.Multiple};
@@ -18,8 +19,8 @@ public sealed class WorkspaceView : UserControl {
     private readonly TextBlock previewText=new() {TextWrapping=TextWrapping.Wrap};
     private RestorePlan? preview;
     public StageManager Stage {get;}
-    public WorkspaceView(WindowService service,WorkspaceController controller,Action<string> report) {
-        this.service=service; this.controller=controller; this.report=report; Stage=new(service);
+    public WorkspaceView(WindowService service,WorkspaceController controller,Action<string> report,Func<bool>? blocked=null) {
+        this.blocked=blocked??(()=>false); this.service=service; this.controller=controller; this.report=report; Stage=new(service);
         var panel=new StackPanel {Padding=new Thickness(20),Spacing=12};
         panel.Children.Add(new TextBlock {Text="Workspaces & Stage Manager",FontSize=24});
         panel.Children.Add(new TextBlock {Text="Save selected windows as a named group. Stage switches minimize only windows from groups activated in this session. Leave Stage restores their original placement.",TextWrapping=TextWrapping.Wrap});
@@ -67,6 +68,6 @@ public sealed class WorkspaceView : UserControl {
         LibraryStore.Save(path,next); library=next; Reload(); report("Workspace library saved locally.");
     }
     private void Button(StackPanel panel,string text,Action action) {
-        var button=new Button {Content=text}; button.Click+=(_,_)=>{try{action();}catch(Exception ex){report(ex.Message);}}; panel.Children.Add(button);
+        var button=new Button {Content=text}; button.Click+=(_,_)=>{try{if(blocked() && text is "Stage group" or "Apply restore")throw new InvalidOperationException("End focus/fullscreen before changing workspaces.");action();}catch(Exception ex){report(ex.Message);}}; panel.Children.Add(button);
     }
 }
