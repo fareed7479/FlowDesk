@@ -6,9 +6,14 @@ namespace FlowDesk.Windows;
 // NormalBounds uses WINDOWPLACEMENT workspace coordinates, not screen coordinates.
 public record WindowState(uint Flags, uint ShowCommand, int MinX, int MinY, int MaxX, int MaxY, Rect NormalBounds);
 public sealed partial class WindowService {
-    public DesktopWindow? Resolve(DesktopWindow expected) => Enumerate().SingleOrDefault(w=>w.Handle==expected.Handle && w.ProcessId==expected.ProcessId && StringComparer.OrdinalIgnoreCase.Equals(w.ProcessPath,expected.ProcessPath) && w.Title==expected.Title);
+    public DesktopWindow? Resolve(DesktopWindow expected) {
+        if(!Native.IsWindow(expected.Handle) || !Native.IsWindowVisible(expected.Handle))return null;
+        Native.GetWindowThreadProcessId(expected.Handle,out uint pid);if(pid!=expected.ProcessId)return null;
+        try{using var process=Process.GetProcessById(expected.ProcessId);if(!StringComparer.OrdinalIgnoreCase.Equals(process.MainModule?.FileName,expected.ProcessPath))return null;var title=new System.Text.StringBuilder(1024);Native.GetWindowText(expected.Handle,title,title.Capacity);if(title.ToString()!=expected.Title || !Native.GetWindowRect(expected.Handle,out var r))return null;return expected with {Bounds=new(r.Left,r.Top,r.Right-r.Left,r.Bottom-r.Top)};}catch(Exception ex)when(ex is Win32Exception or InvalidOperationException or ArgumentException){return null;}
+    }
     private void RequireLive(DesktopWindow window) {
         if(Resolve(window) is null) throw new InvalidOperationException("Window closed or changed; refresh first.");
+        if(Native.IsHungAppWindow(window.Handle))throw new InvalidOperationException("The application is not responding; try again when it recovers.");
     }
     public WindowState CaptureState(DesktopWindow window) {
         RequireLive(window);

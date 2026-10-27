@@ -1,4 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
  <PropertyGroup><SelfContained>true</SelfContained><DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants><OutputType>WinExe</OutputType><TargetFramework>net10.0-windows10.0.19041.0</TargetFramework><TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion><UseWinUI>true</UseWinUI><ImplicitUsings>disable</ImplicitUsings><WindowsPackageType>None</WindowsPackageType><WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained><RuntimeIdentifier>win-x64</RuntimeIdentifier><PlatformTarget>x64</PlatformTarget><ApplicationManifest>app.manifest</ApplicationManifest></PropertyGroup>
  <ItemGroup><FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" /><PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260921001" /><PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4948" /><ProjectReference Include="../FlowDesk.Windows/FlowDesk.Windows.csproj" /></ItemGroup>
+ <!-- WinUI's generated app PRI/XBF are build outputs; include them explicitly in unpackaged dotnet publish. -->
+ <Target Name="PublishWinUIAppResources" AfterTargets="ComputeFilesToPublish">
+  <Error Condition="!Exists('$(TargetDir)$(AssemblyName).pri') Or !Exists('$(TargetDir)App.xbf')" Text="Required WinUI application resources were not generated." />
+  <ItemGroup>
+   <ResolvedFileToPublish Include="$(TargetDir)$(AssemblyName).pri" RelativePath="$(AssemblyName).pri" CopyToPublishDirectory="PreserveNewest" />
+   <ResolvedFileToPublish Include="$(TargetDir)App.xbf" RelativePath="App.xbf" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+ </Target>
 </Project>

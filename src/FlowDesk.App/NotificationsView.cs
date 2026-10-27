@@ -28,7 +28,7 @@ internal sealed class NotificationsView : UserControl {
         Add(actions,"Mark all read",()=>center.ReadAll());
         Add(actions,"Clear notifications",async ()=>{try{await native.Clear();center.Clear();}catch(Exception ex){status.Text=ex.Message;}});
         panel.Children.Add(actions);panel.Children.Add(status);panel.Children.Add(cards);
-        Content=new ScrollViewer {Content=panel};center.Changed+=Render;Render();
+        Content=Design.Page(panel,"A quieter notification center","Your FlowDesk events in one place. Choose what deserves a Windows banner and keep everything else here.","NOTIFICATIONS");center.Changed+=Render;Render();
     }
     private void SaveSettings() {center.SetPreferences(center.State.Preferences with {WindowsBanners=Banners.IsOn,Sound=Sound.IsOn});}
     private void Add(StackPanel panel,string label,Action action) {var b=new Button {Content=label};b.Click+=(_,_)=>{try{action();}catch(Exception ex){status.Text=ex.Message;}};Buttons[label]=b;panel.Children.Add(b);}

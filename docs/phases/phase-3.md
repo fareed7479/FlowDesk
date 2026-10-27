@@ -2,27 +2,27 @@
 
 [Documentation](../README.md) · [Roadmap](../roadmap.md) · [Verification](../verification.md)
 
-**Status:** Basic in-app searchable overview, introduced in v0.2.0.
+**Status:** Advanced scope implemented in v0.5.0.
 
 ## Delivered scope
 
-Display the current eligible window inventory, filter by window title or app name, and request activation of a selected window. The panel shares a tab with FlowDock.
+Live DWM thumbnail cards, title/app search, automatic event-driven refresh, display grouping/filtering, window activation, and display move with undo. Preview relationships are released when cards/pages unload.
 
 ## Use the feature
 
-Open Overview & FlowDock, choose Refresh overview & dock, enter a search term, and select a result. Windows can decline foreground activation; use the taskbar if the request is rejected.
+Open Overview & FlowDock. Search for an app/title and filter a display. Select a window card, choose a target display, then Move selected to display; Undo display move restores its prior rectangle. Open activates a window. Search narrower if more than 36 results match.
 
 ## Verification evidence
 
-[v0.2.0 verification](../verification-v0.2.0.md) records rendered overview/tab navigation and native activation of a minimized fixture. It does not establish a successful filtered-result UI workflow. Later builds retain the panel without claiming broader visual validation.
+The WinUI suite verifies no-result search, native create/destroy event updates, real DWM registrations, selection and display move/undo on controlled windows. Display metadata and DPI are checked natively. See the [current verification report](../verification-v0.5.0.md).
 
 ## Remaining work and boundaries
 
-Live DWM thumbnails, monitor organization, virtual-desktop management, and comprehensive UI/accessibility verification remain pending. Refresh is explicit; this is a list-based overview rather than the full visual Mission Control experience.
+Actual multiple-monitor/mixed-DPI/hot-plug behavior remains unqualified. Minimized/protected previews can fall back. OS virtual-desktop management is not implemented. Windows can decline activation and app sizing can differ.
 
 ## Implementation map
 
-`DesktopOverviewView.cs` and native window activation services.
+`DesktopOverviewView.cs`, `LivePreview.cs`, `LiveThumbnail.cs`, `DesktopDisplay.cs`, `WindowEvents.cs`.
 
 ---
 

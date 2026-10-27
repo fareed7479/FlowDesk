@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Phase 7](phases/phase-7.md) · [Prerequisites](getting-started.md)
 
-FlowWeb is an optional Windows Chrome/Edge extension for FlowDesk v0.4.0. It shares web-tab metadata only after you connect, and exposes activate, mute and pin controls plus named browser tab workspaces.
+FlowWeb is an optional Windows Chrome/Edge extension for FlowDesk v0.5.0. It shares web-tab metadata only after you connect, and exposes activate, mute and pin controls plus named browser tab workspaces.
 
 ## Setup
 
@@ -16,13 +16,15 @@ pwsh -ExecutionPolicy Bypass -File .\scripts\run.ps1
 
 The installer registers `com.flowdesk.flowweb` under the current user's Chrome and Edge native messaging host keys. The executable and generated manifest stay in the project on its drive. It refuses to replace a registration owned by another application. The host is self-contained; it does not need a system-wide .NET installation.
 
+For an installed app, register its host using the [distribution installer](distribution.md) with `-RegisterFlowWeb`, and load `<InstallRoot>\versions\<version>\extension`. The commands above are for development output.
+
 Load the extension manually in each browser you want to connect:
 
 1. Open `chrome://extensions` or `edge://extensions`.
 2. Enable the browser's developer extension-loading option yourself and choose Load unpacked.
 3. Select this repository's `extensions\flowweb` folder.
 4. Check the displayed extension ID: `dinpkkjphjbeadjlhndbgaaciimepnom`. The development manifest includes a public key to keep this ID stable across folders/browsers.
-5. In FlowDesk, open FlowWeb and enable the bridge.
+5. In FlowDesk, select FlowWeb in the sidebar and enable the bridge.
 6. Open the FlowWeb browser popup, review its sharing description, then choose Connect & share tabs.
 
 No personal browser profiles are changed by the build or native host installer. The extension is not published in a store yet. A future store release needs its store identity explicitly reviewed and included in the native origin configuration.
@@ -45,7 +47,7 @@ Active FlowDesk focus/fullscreen sessions block FlowWeb actions that change brow
 
 There are no page content scripts or website host permissions. The extension does not run in incognito. Native communication accepts the pinned origin and a local pairing token over a current-user named pipe. Frames have a 256 KiB limit, protocol version 1, correlation IDs and a command whitelist. Messages cannot invoke arbitrary OS commands. Browser restore accepts HTTP/HTTPS URLs without embedded credentials.
 
-Live snapshots stay in memory. Browser workspace URLs are saved explicitly in `data/flowweb-workspaces.json` beside FlowDesk's executable. The local bridge token is in `data/flowweb-bridge.json`; the native host's generated settings reference that file. These files, native host manifests and test browser profiles are excluded from Git. Disabling the bridge closes connections, clears snapshots and rotates its token. Invalid or oversized workspace data preserves the existing library.
+Live snapshots stay in memory. Browser workspace URLs are saved explicitly in `flowweb-workspaces.json` in FlowDesk's data directory: adjacent `data/` in development or `<InstallRoot>\data` for an installed build. The local bridge token is in `data/flowweb-bridge.json`; the native host's generated settings reference that file. These files, native host manifests and test browser profiles are excluded from Git. Disabling the bridge closes connections, clears snapshots and rotates its token. Invalid or oversized workspace data preserves the existing library.
 
 ## Disconnect and remove
 

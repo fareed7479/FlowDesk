@@ -37,5 +37,8 @@ internal sealed class NativeNotifications : INoticeDelivery, IDisposable {
         }
         return false;
     }
+    internal static int Uninstall() {
+        try {if(AppNotificationManager.IsSupported())AppNotificationManager.Default.UnregisterAll();return 0;}catch(Exception){return 1;}
+    }
     public void Dispose() {if(registered){AppNotificationManager.Default.NotificationInvoked-=Invoked;AppNotificationManager.Default.Unregister();registered=false;}}
 }

@@ -2,7 +2,7 @@
 
 [Documentation](../README.md) · [Roadmap](../roadmap.md) · [Verification](../verification.md)
 
-**Status:** Implemented in v0.4.0; actual personal Chrome/Edge validation remains pending.
+**Status:** Implemented in v0.4.0 and visually refreshed in v0.5.0; actual personal Chrome/Edge validation remains pending.
 
 ## Delivered scope
 
@@ -14,7 +14,7 @@ Follow the [FlowWeb setup and usage guide](../flowweb.md). Build and register th
 
 ## Verification evidence
 
-[v0.4.0 verification](../verification-v0.4.0.md) records 93 controller/native assertions, eight extension/host tests, eight actual isolated-browser checks, and eight WinUI FlowWeb workflows. Browser commands traversed the real extension, host process, and desktop UI.
+[v0.5.0 verification](../verification-v0.5.0.md) records 115 controller/native assertions, eight extension/host tests, eight actual isolated-browser checks, and eight WinUI FlowWeb workflows. Browser commands traversed the real extension, host process, and desktop UI.
 
 ## Remaining work and boundaries
 

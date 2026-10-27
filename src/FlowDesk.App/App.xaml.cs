@@ -15,6 +15,7 @@ public partial class App : Application {
         lock(gate){if(pendingNotice.HasValue){window.ShowNotice(pendingNotice.Value);pendingNotice=null;}}
         if(Program.RequestedNotice.HasValue)window.ShowNotice(Program.RequestedNotice.Value);
         if(Program.InitialActivation is not null) Program.Route(Program.InitialActivation);
+        if(Program.AdvancedChecks)window.DispatcherQueue.TryEnqueue(async()=>await AdvancedWorkflowChecks.Run(window));
         if(Program.FlowWebChecks)window.DispatcherQueue.TryEnqueue(async()=>await FlowWebWorkflowChecks.Run(window));
         if(Program.HotkeyCheck)window.DispatcherQueue.TryEnqueue(async ()=>await InteractionChecks.Hotkey(window));
         if(Program.ToastProbe)window.DispatcherQueue.TryEnqueue(async ()=>await InteractionChecks.ToastProbe(window));

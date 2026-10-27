@@ -4,9 +4,9 @@
 
 **A native workspace companion for Windows 11**
 
-Arrange windows · Switch workspaces · Stay focused · Connect your browser
+Live previews · Recoverable workspaces · Floating dock · Focus · Browser controls
 
-**v0.4.0 · Development prototype · C# / .NET 10 · WinUI 3 · Windows x64**
+**v0.5.0 · Advanced desktop preview · C# / .NET 10 · WinUI 3 · Windows x64**
 
 [Get started](docs/getting-started.md) · [Documentation](docs/README.md) · [Phase roadmap](docs/roadmap.md) · [Verification](docs/verification.md)
 
@@ -16,18 +16,18 @@ Arrange windows · Switch workspaces · Stay focused · Connect your browser
 
 ## Your desktop, organized
 
-FlowDesk brings window layouts, named workspaces, focus sessions, notifications, and optional browser controls into one native desktop app. Its FlowControl window is the starting point; additional tabs expose each feature.
+FlowDesk brings window layouts, named workspaces, focus sessions, notifications, and optional browser controls into one native desktop app. Its FlowControl window is the starting point; the sidebar opens each feature.
 
-> **Project status:** Phases 0–7 have implementations, with basic scope in phases 2–4. The full product vision is unfinished. Advanced visual experiences and Phase 8 distribution work remain pending; this is not a production-qualified release.
+> **Project status:** The advanced desktop scope is implemented with a redesigned interface, live previews, recoverable stages, and a floating dock. Local install/update/rollback tooling is available. Trusted signing, store publication, clean-machine and broader hardware qualification are still pending.
 
 ## What you can use today
 
 | Experience | Available behavior |
 | --- | --- |
-| **FlowControl** | Detect windows, arrange 1–4 columns, preview saved layouts, restore matching windows, and undo one layout operation. |
-| **Workspaces & Stage** | Save named window groups, restore their layouts, switch basic stages, and minimize inactive group members. |
-| **Overview & FlowDock** | Search window titles or app names, activate a window, and cycle through a running app's windows. |
-| **Focus & fullscreen** | Run timed focus sessions, minimize selected distractions, use borderless fullscreen, and restore managed windows. |
+| **FlowControl** | Automatically refresh windows, arrange 1–4 columns, preview saved layouts, restore matching windows, and undo one layout operation. |
+| **Workspaces & Stage** | Save named groups, inspect live previews, switch stages, and recover original managed placements after interruption. |
+| **Overview & FlowDock** | Browse live window cards by display, search/activate/move windows, and use a floating auto-hide dock with persistent pins. |
+| **Focus & fullscreen** | Run timed sessions with a countdown, minimize selected distractions, use borderless fullscreen, and restore managed windows. |
 | **Notifications** | Review persistent FlowDesk events, manage unread cards, and opt into Windows banners. |
 | **FlowWeb** | Opt into live browser tab sharing; activate, mute, pin, and save or reopen tab workspaces. |
 
@@ -59,26 +59,27 @@ The build script also runs controller/native checks using temporary fixture wind
 | :---: | --- | --- |
 | [0](docs/phases/phase-0.md) | Environment audit and local toolchain | Complete for audited machine |
 | [1](docs/phases/phase-1.md) | Window engine and FlowControl | Prototype implemented |
-| [2](docs/phases/phase-2.md) | Workspaces and Stage Manager | Basic implementation |
-| [3](docs/phases/phase-3.md) | Mission Control | Basic searchable overview |
-| [4](docs/phases/phase-4.md) | FlowDock | Basic running-app panel |
+| [2](docs/phases/phase-2.md) | Workspaces and Stage Manager | Live group previews and durable recovery |
+| [3](docs/phases/phase-3.md) | Mission Control | Live previews and display organization |
+| [4](docs/phases/phase-4.md) | FlowDock | Floating dock, saved pins and auto-hide |
 | [5](docs/phases/phase-5.md) | FlowDesk notification center | Implemented |
 | [6](docs/phases/phase-6.md) | Fullscreen and focus | Implemented |
 | [7](docs/phases/phase-7.md) | Optional FlowWeb integration | Implemented; branded-browser validation pending |
-| [8](docs/phases/phase-8.md) | Packaging and distribution | Not implemented |
+| [8](docs/phases/phase-8.md) | Packaging and distribution | Local lifecycle tooling; trusted release pending |
 
-Live thumbnails, richer stage visuals, a floating/pinned dock, broader monitor compatibility, signing, an installer, and updates remain future work. See the [roadmap](docs/roadmap.md) for release gaps.
+The native interface includes an adaptive sidebar, theme-aware cards, Mica, page transitions, light/dark/system appearance, and optional sign-in launch. See [distribution](docs/distribution.md) for the self-contained package, local updates and rollback, and the [roadmap](docs/roadmap.md) for remaining release gates.
 
 ## Tested, with clear boundaries
 
 The last application verification was on Windows 11 x64 build 26200:
 
 - Build completed with **zero warnings and errors**.
-- **93** controller/native assertions and **8** extension/native-host tests passed.
+- **115** controller/native assertions and **8** extension/native-host tests passed.
 - **8** isolated-browser checks and **8** FlowWeb UI workflows passed.
+- **25** advanced UI workflows and **14** fixture distribution checks passed.
 - **23** earlier desktop workflows and notification activation checks passed again.
 
-Browser end-to-end testing used isolated Chromium. Personal Chrome/Edge profiles, actual Edge UI behavior, mixed-DPI and broader hardware compatibility still need validation. These are recorded results from v0.4.0, not a CI badge or a guarantee for every machine. Read the [verification guide](docs/verification.md) and [known limitations](docs/limitations.md).
+Browser end-to-end testing used isolated Chromium. Personal Chrome/Edge profiles, actual Edge UI behavior, mixed-DPI and broader hardware compatibility still need validation. These are recorded results from v0.5.0, not a CI badge or a guarantee for every machine. See the [compatibility matrix](docs/compatibility.md). Read the [verification guide](docs/verification.md) and [known limitations](docs/limitations.md).
 
 ## Explore the repository
 
@@ -94,10 +95,10 @@ Browser end-to-end testing used isolated Chromium. Personal Chrome/Edge profiles
 
 ## Data and local integration
 
-Saved layouts, window metadata, notification history, recovery journals, and explicitly saved browser URLs live locally beside the application in `data\`. Saved browser URLs are plaintext. Live browser snapshots stay in memory. Runtime data, pairing tokens, caches, and browser test profiles are excluded from Git.
+Saved layouts, window metadata, notification history, recovery journals, and explicitly saved browser URLs stay local. Development builds use `data\` beside the application; installed builds use `<InstallRoot>\data`. Saved browser URLs are plaintext. Live browser snapshots stay in memory. Runtime data, pairing tokens, caches, and browser test profiles are excluded from Git.
 
 The app registers its own per-user notification identity/protocol. The optional FlowWeb installer registers its own per-user browser native host. Read [architecture and data](docs/architecture.md) before moving build output or removing an installation.
 
 ---
 
-[Documentation hub](docs/README.md) · [Release history](CHANGELOG.md) · [Phase-by-phase roadmap](docs/roadmap.md)
+[Documentation hub](docs/README.md) · [Release history](CHANGELOG.md) · [Install & update](docs/distribution.md) · [Phase-by-phase roadmap](docs/roadmap.md)

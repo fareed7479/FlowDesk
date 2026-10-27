@@ -6,7 +6,7 @@
 
 ## Delivered scope
 
-Run focus timers of 1–240 whole minutes; optionally apply borderless fullscreen; minimize explicitly selected distractions; persist executable-path exclusions; quiet FlowDesk banners. Support standalone target fullscreen and FlowDesk's own native fullscreen presenter. Journal managed changes for restart recovery.
+Run focus timers of 1–240 whole minutes with a live countdown/progress card; optionally apply borderless fullscreen; minimize explicitly selected distractions; persist executable-path exclusions; quiet FlowDesk banners. Support standalone target fullscreen and FlowDesk's own native fullscreen presenter. Journal managed changes for restart recovery.
 
 ## Use the feature
 
@@ -19,7 +19,7 @@ A timer expiry or closed target ends the session. Closing FlowDesk attempts rest
 
 ## Verification evidence
 
-[v0.3.0 verification](../verification-v0.3.0.md) records a real one-minute timer, actual WinUI controls, native placement/frame restoration, close/target-exit behavior, restart recovery, and a physical global-shortcut test. The 23 desktop workflows passed again on [v0.4.0](../verification-v0.4.0.md).
+[v0.3.0 verification](../verification-v0.3.0.md) records a real one-minute timer, actual WinUI controls, native placement/frame restoration, close/target-exit behavior, restart recovery, and a physical global-shortcut test. The 23 desktop workflows passed again on [v0.5.0](../verification-v0.5.0.md).
 
 ## Remaining work and boundaries
 

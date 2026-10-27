@@ -1,6 +1,6 @@
 # Getting started
 
-[Documentation](README.md) · [Limitations](limitations.md) · [FlowWeb setup](flowweb.md)
+[Documentation](README.md) · [Limitations](limitations.md) · [FlowWeb setup](flowweb.md) · [Install & update](distribution.md)
 
 ## Prerequisites
 
@@ -38,9 +38,9 @@ pwsh -ExecutionPolicy Bypass -File .\scripts\build.ps1
 pwsh -ExecutionPolicy Bypass -File .\scripts\run.ps1
 ```
 
-The build script builds the solution and runs the controller/native checks. Its movement checks create and arrange temporary test windows. The run script starts the Debug Windows x64 build.
+The build script builds the solution and runs the controller/native checks. Its movement checks create and arrange temporary test windows. The run script starts the Debug Windows x64 build. For a versioned installation with stable data, use the [distribution workflow](distribution.md).
 
-Start in FlowControl: refresh the inventory, select one to four windows, and choose Split. Undo reverses one successful layout operation. Open the other tabs for named workspaces, overview/dock, focus, notifications, and optional FlowWeb. Closing the main window exits the app; the tray icon is a basic activation entry point.
+Start in FlowControl: refresh the inventory, select one to four windows, and choose Split. Undo reverses one successful layout operation. Use the sidebar for named workspaces, live overview/dock, focus, notifications, optional FlowWeb, and appearance/startup settings. Closing the main window exits the app; the tray icon is a basic activation entry point.
 
 ## Output and saved data
 
@@ -50,7 +50,7 @@ The desktop output is:
 src/FlowDesk.App/bin/Debug/net10.0-windows10.0.19041.0/win-x64/
 ```
 
-The desktop app includes its .NET and Windows App SDK runtime output. Retain the complete output folder; copying just the executable is insufficient. This is a development build, not a signed installer or a tested portable distribution.
+The desktop app includes its .NET and Windows App SDK runtime output. Retain the complete output folder; copying just the executable is insufficient. This is a development build. Separate package/lifecycle tooling is available; trusted signing and clean-machine qualification remain release gates.
 
 Runtime data lives in `data\` beside the executable. Back it up before cleaning, relocating, or replacing output. Read [architecture and data](architecture.md) for file details and local registrations.
 

@@ -31,6 +31,7 @@ public sealed partial class WindowService {
         var r=info.Work; return new(r.Left,r.Top,r.Right-r.Left,r.Bottom-r.Top);
     }
     public void Move(DesktopWindow window, Rect bounds) {
+        if(Native.IsHungAppWindow(window.Handle))throw new InvalidOperationException("The application is not responding; try again when it recovers.");
         Native.GetWindowThreadProcessId(window.Handle,out uint pid);
         if(!Native.IsWindow(window.Handle) || pid!=window.ProcessId) throw new InvalidOperationException("Window closed or changed; refresh first.");
         using var process=Process.GetProcessById((int)pid);

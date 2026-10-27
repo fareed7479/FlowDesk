@@ -1,37 +1,28 @@
 # Phase roadmap
 
-[Documentation](README.md) · [Verification](verification.md) · [Limitations](limitations.md)
+[Documentation](README.md) · [Verification](verification.md) · [Compatibility](compatibility.md)
 
-Current application version: **v0.4.0**. Phases 0–7 have implementations, but the overall product is not finished. Phases 2–4 deliver basic experiences, and Phase 8 has not been implemented.
+Current version: **v0.5.0**. The advanced desktop feature scope is implemented, including a redesigned interface, live previews, durable stage recovery, and a floating dock. Distribution tooling is available; the full product is still awaiting release qualification.
 
-## Implementation matrix
-
-| Phase | Delivered development scope | Status | Guide |
+| Phase | Delivered scope | Status | Guide |
 | :---: | --- | --- | --- |
-| 0 | Windows audit, local SDK and caches | Complete on audited machine | [Environment](phases/phase-0.md) |
-| 1 | Window detection/positioning, splits, save/restore, preview and undo | Prototype implemented | [FlowControl](phases/phase-1.md) |
-| 2 | Named groups, restore preview, stage switching and inactive-group minimization | Basic implementation | [Workspaces & Stage](phases/phase-2.md) |
-| 3 | Search windows by title/app and request activation | Basic implementation | [Mission Control](phases/phase-3.md) |
-| 4 | Group running windows by app and cycle through them | Basic implementation | [FlowDock](phases/phase-4.md) |
-| 5 | Persistent FlowDesk cards, unread state, opt-in banners and validated activation | Implemented within documented scope | [Notifications](phases/phase-5.md) |
-| 6 | Timed focus, borderless fullscreen, selected distractions, exclusions and recovery | Implemented within documented scope | [Focus & fullscreen](phases/phase-6.md) |
-| 7 | Opt-in extension, native bridge, tab controls and browser workspaces | Implemented; personal Chrome/Edge validation pending | [FlowWeb](phases/phase-7.md) |
-| 8 | Installer, signing, startup opt-in, updates and release qualification | Not implemented | [Distribution](phases/phase-8.md) |
+| 0 | Audited Windows machine and local SDK/cache workflow | Established | [Environment](phases/phase-0.md) |
+| 1 | Window engine, splits, preview/restore, undo, event-driven background inventory | Implemented prototype | [FlowControl](phases/phase-1.md) |
+| 2 | Named groups, live stage previews, switching and durable recovery | Advanced scope implemented | [Workspaces & Stage](phases/phase-2.md) |
+| 3 | Live DWM cards, search, display filtering/grouping and display moves/undo | Advanced scope implemented | [Mission Control](phases/phase-3.md) |
+| 4 | In-app and floating docks, persistent pins, explicit app launch and auto-hide | Advanced scope implemented | [FlowDock](phases/phase-4.md) |
+| 5 | FlowDesk event center, opt-in native delivery and validated activation | Implemented and redesigned | [Notifications](phases/phase-5.md) |
+| 6 | Timed focus/countdown, borderless fullscreen, exclusions and recovery | Implemented and redesigned | [Focus](phases/phase-6.md) |
+| 7 | Optional extension, authenticated local bridge, tab controls and URL workspaces | Implemented and redesigned; branded-browser validation pending | [FlowWeb](phases/phase-7.md) |
+| 8 | Release ZIP, checksums, optional signing hook, per-user install/update/rollback/removal | Local lifecycle implemented; trusted release pending | [Distribution](phases/phase-8.md) |
 
-## Remaining product work
+## Release work still outstanding
 
-1. Complete the visual stage experience and durable stage recovery.
-2. Add supported live thumbnails and monitor organization to the overview.
-3. Build the optional floating FlowDock, auto-hide behavior, and explicit app pins.
-4. Improve inventory refresh and responsiveness around potentially blocking native calls.
-5. Extend real-app, mixed-DPI, multi-monitor, topology-change, accessibility, and performance coverage.
-6. Validate FlowWeb in actual Chrome/Edge profiles and managed-browser environments.
-7. Complete the Phase 8 packaging and release lifecycle.
+- Supply an authorized trusted code-signing certificate and validate signed artifacts/timestamping.
+- Qualify prerequisites and install/upgrade/removal on clean Windows machines.
+- Test real mixed-DPI/multi-monitor hardware, display hot-plug, protected/elevated apps, accessibility, and large inventories.
+- Validate actual Chrome/Edge profiles and managed-browser policies; publish optional extension store listings with reviewed identities.
+- Choose any future online update service and signed graphical installer/store distribution.
+- Expand visual behaviors only through supported APIs; OS virtual-desktop management and a comprehensive system-settings Control Center are not implemented.
 
-The original all-in-one Control Center vision also includes broader Windows system controls. Current FlowControl offers a Settings entry point; comprehensive system controls are not implemented.
-
-## Scope boundaries
-
-Notifications cover FlowDesk events. Cross-app notification aggregation would require separate design and permission review. Focus manages selected desktop windows and FlowDesk banner delivery; global Windows Do Not Disturb/privacy settings are outside the current scope.
-
-No completion percentage is assigned: basic prototypes, tested feature scopes, and release qualification are different kinds of work. Use the phase guides and [versioned evidence](verification.md) to assess readiness.
+The implementation uses no elevation bypass and does not change Windows Do Not Disturb or global privacy settings. Browser sharing and startup remain explicit opt-ins. See [compatibility evidence](compatibility.md) for the difference between actual tests and unverified environments.

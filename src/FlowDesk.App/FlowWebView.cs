@@ -54,7 +54,7 @@ internal sealed class FlowWebView : UserControl,IDisposable {
             var dialog=new ContentDialog{Title="Remove browser workspace?",Content=$"Remove {workspace.Name} from the local library?",PrimaryButtonText="Remove",CloseButtonText="Cancel",XamlRoot=XamlRoot};
             if(await dialog.ShowAsync()==ContentDialogResult.Primary){var next=Library!.Remove(workspace.Id);next.Save(libraryPath);Library=next;RenderLibrary();}
         });
-        panel.Children.Add(savedActions);Content=new ScrollViewer{Content=panel};
+        panel.Children.Add(savedActions);Content=Design.Page(panel,"Bring your browser into the flow","Connect intentionally, control shared tabs, and save the web workspaces you want to return to.","FLOWWEB");
         Bridge.Changed+=()=>DispatcherQueue.TryEnqueue(()=>{if(!disposing)Render();});
         try{Library=WebLibrary.Load(libraryPath);RenderLibrary();}catch(Exception ex){status.Text="Browser library is preserved and unavailable: "+ex.Message;}
         Render();

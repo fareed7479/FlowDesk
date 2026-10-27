@@ -2,37 +2,27 @@
 
 [Documentation](../README.md) · [Roadmap](../roadmap.md) · [Verification](../verification.md)
 
-**Status:** Not implemented. This page documents planned work, not a completed phase.
+**Status:** Local lifecycle tooling implemented in v0.5.0; trusted release qualification remains pending.
 
-## Current baseline
+## Delivered scope
 
-Existing development output is self-contained, but the project has no signed installer, automatic updater, startup opt-in workflow, or store release. FlowWeb has development-loading and native-host scripts only.
+Self-contained Windows ZIP packaging, per-file hashes and archive checksum, optional Authenticode signing with an existing certificate, owned per-user installation, stable data storage, opt-in sign-in launch, explicit local updates, rollback, and data-preserving removal. Native notification cleanup is performed by the owned app before removal.
 
-## Development use today
+## Use the feature
 
-For now, use the [development build instructions](../getting-started.md). Keep the complete output folder together and back up local data before output cleanup. Do not treat a copied executable as a complete installation.
+Follow the [distribution guide](../distribution.md) to package, install, update, roll back or remove. Packages are local and updates explicit. Use an independently obtained expected SHA256; require trusted signatures when signed artifacts are available. Browser extension loading remains manual.
 
 ## Verification evidence
 
-There is no Phase 8 verification report or clean-machine release qualification. Previous build and feature tests do not establish installer/update readiness.
+Fourteen fixture checks cover the lifecycle, migration and malformed/unsafe package rejection. Actual published-package launch/removal is tracked separately in the [v0.5.0 report](../verification-v0.5.0.md). No trusted signing certificate was available. See the [current verification report](../verification-v0.5.0.md).
 
 ## Remaining work and boundaries
 
-Before marking this phase complete:
-
-- Choose and test packaging, prerequisite delivery, and a complete install/uninstall lifecycle.
-- Sign and verify application artifacts and installer packages with authorized credentials.
-- Add explicit startup opt-in, an update strategy, version migration, and rollback handling.
-- Define stable per-user data storage and preserve existing development data during migration.
-- Validate clean-machine install, upgrade, repair, uninstall, and registration cleanup.
-- Complete real-app, monitor/DPI, accessibility, performance, and branded-browser release tests.
-- Prepare optional extension store identities/listings and validate pinned native origins.
-
-Release acceptance requires published evidence for these workflows, not only a successful build.
+Trusted signing/timestamp verification, clean-machine prerequisite testing, broad hardware/app/browser validation, store publication, a network update service, and a signed graphical installer still require work or credentials. This phase is not marked production-qualified.
 
 ## Implementation map
 
-Planned packaging/release tooling; no implementation claimed.
+`scripts/package.ps1`, `install-flowdesk.ps1`, `rollback-flowdesk.ps1`, `uninstall-flowdesk.ps1`, `AppearanceView.cs`.
 
 ---
 

@@ -2,32 +2,27 @@
 
 [Documentation](../README.md) · [Roadmap](../roadmap.md) · [Verification](../verification.md)
 
-**Status:** Basic implementation, introduced in v0.2.0.
+**Status:** Advanced scope implemented in v0.5.0.
 
 ## Delivered scope
 
-Save, replace, and remove named groups of selected windows; preview/apply a group layout; stage a group and minimize inactive previously staged members. Shared windows remain visible, and unrelated windows are left untouched. Leave Stage restores original managed placement.
+Named groups support save/replace/remove, preview/restore, and stage switching. Live preview cards show matched group windows. Inactive managed members minimize; shared members stay visible and unrelated windows are untouched. Original managed states are written to a durable journal before mutation.
 
 ## Use the feature
 
-1. Open Workspaces & Stage and refresh windows.
-2. Select current, non-minimized windows, enter a unique name, and choose Save new.
-3. Select a saved group to Preview / Apply restore or Stage group.
-4. Stage another group to switch; use Leave Stage before entering focus/fullscreen.
-
-Named groups persist in `data/library.json`. Removing a group does not close its applications.
+Open Workspaces & Stage. Select current non-minimized windows and save a unique group. Select a group to see live previews, then choose Preview / Apply restore or Stage group. Switch to another group or Leave Stage. Leave Stage before entering focus/fullscreen.
 
 ## Verification evidence
 
-[v0.2.0 verification](../verification-v0.2.0.md) records native checks for inactive/shared/unrelated windows, unavailable groups, and placement restoration, including minimized/maximized states. All UI workflows were not established end to end.
+Native checks cover inactive/shared/unrelated windows, unavailable groups, original show states, and separate-process interrupted-stage recovery after a title change. Actual WinUI checks cover saving a group, preview/staging, journal creation, and Leave Stage. See the [current verification report](../verification-v0.5.0.md).
 
 ## Remaining work and boundaries
 
-Richer visual grouping, animated stage previews, and durable stage crash recovery remain unfinished. Stage snapshots are session-only; saved desktop layouts still depend on existing window identity/title matches. Normal close attempts restoration and can cancel closing when work remains.
+Saved-layout matching still uses executable path/title and cannot reopen applications. Recovery uses a marker plus process identity/start time, skips missing windows, and preserves corrupt journals for manual attention. Real monitor/app compatibility needs broader qualification.
 
 ## Implementation map
 
-`WorkspaceLibrary.cs`, `WorkspaceView.cs`, and `StageManager.cs`.
+`WorkspaceView.cs`, `StageManager.cs`, `ManagedWindows.cs`.
 
 ---
 

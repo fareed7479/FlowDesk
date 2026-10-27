@@ -13,22 +13,27 @@ public sealed class WorkspaceView : UserControl {
     private readonly Action<string> report;
     private readonly string path=Path.Combine(Program.DataDirectory,"library.json");
     private WorkspaceLibrary? library;
-    private readonly ListView groups=new() {Height=180,SelectionMode=ListViewSelectionMode.Single};
-    private readonly ListView members=new() {Height=220,SelectionMode=ListViewSelectionMode.Multiple};
-    private readonly TextBox name=new() {Header="Workspace name",PlaceholderText="Design, Research, Writing…",MaxLength=64};
+    internal readonly ListView groups=new() {Height=180,SelectionMode=ListViewSelectionMode.Single};
+    internal readonly ListView members=new() {Height=220,SelectionMode=ListViewSelectionMode.Multiple};
+    internal readonly TextBox name=new() {Header="Workspace name",PlaceholderText="Design, Research, Writing…",MaxLength=64};
     private readonly TextBlock previewText=new() {TextWrapping=TextWrapping.Wrap};
     private RestorePlan? preview;
+    private readonly StackPanel stagePreviews=new(){Spacing=12};
+    private void RenderStagePreview(RestorePlan plan){stagePreviews.Children.Clear();stagePreviews.Children.Add(Design.Caption($"{plan.Moves.Count} matched windows · preview only"));var row=new StackPanel{Orientation=Orientation.Horizontal,Spacing=12};foreach(var move in plan.Moves.Take(3)){var card=new StackPanel{Width=220,Spacing=8};card.Children.Add(new LivePreview(move.Window.Handle,110));card.Children.Add(Design.Caption(move.Window.Title));row.Children.Add(Design.Surface(card));}stagePreviews.Children.Add(new ScrollViewer{Content=row,HorizontalScrollMode=ScrollMode.Enabled,HorizontalScrollBarVisibility=ScrollBarVisibility.Auto,VerticalScrollMode=ScrollMode.Disabled});}
     public StageManager Stage {get;}
+    internal readonly System.Collections.Generic.Dictionary<string,Button> Buttons=new();
     public WorkspaceView(WindowService service,WorkspaceController controller,Action<string> report,Func<bool>? blocked=null) {
-        this.blocked=blocked??(()=>false); this.service=service; this.controller=controller; this.report=report; Stage=new(service);
+        this.blocked=blocked??(()=>false); this.service=service; this.controller=controller; this.report=report; Stage=new(service,Path.Combine(Program.DataDirectory,"stage-recovery.json"));
+        if(Stage.IsActive){var recovered=Stage.Leave();report($"Stage recovery: restored {recovered.Presented}, skipped {recovered.Skipped}. "+string.Join(" ",recovered.Errors));}
         var panel=new StackPanel {Padding=new Thickness(20),Spacing=12};
         panel.Children.Add(new TextBlock {Text="Workspaces & Stage Manager",FontSize=24});
-        panel.Children.Add(new TextBlock {Text="Save selected windows as a named group. Stage switches minimize only windows from groups activated in this session. Leave Stage restores their original placement.",TextWrapping=TextWrapping.Wrap});
-        panel.Children.Add(groups);
-        groups.SelectionChanged+=(_,_)=> {preview=null; previewText.Text=""; if(groups.SelectedItem is WorkspaceGroup g) name.Text=g.Name;};
+        panel.Children.Add(new TextBlock {Text="Save selected windows as a named group. Stage switches minimize inactive managed members. Original placements are journaled before changes and recovered after interruption.",TextWrapping=TextWrapping.Wrap});
+        groups.ItemTemplate=(DataTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load("<DataTemplate xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"><StackPanel Spacing=\"4\" Padding=\"8\"><TextBlock Text=\"{Binding Name}\" FontSize=\"18\" FontWeight=\"SemiBold\"/><TextBlock Text=\"{Binding Workspace.Windows.Length}\" Opacity=\"0.6\"/></StackPanel></DataTemplate>");
+        panel.Children.Add(groups);panel.Children.Add(stagePreviews);
+        groups.SelectionChanged+=(_,_)=> {preview=null; previewText.Text=""; stagePreviews.Children.Clear();if(groups.SelectedItem is WorkspaceGroup g){name.Text=g.Name;RenderStagePreview(controller.Preview(g.Workspace));}};
         var groupActions=new StackPanel {Orientation=Orientation.Horizontal,Spacing=8};
         Button(groupActions,"Preview",()=>{
-            preview=null; var plan=controller.Preview(Selected().Workspace); preview=plan;
+            preview=null; var plan=controller.Preview(Selected().Workspace); preview=plan;RenderStagePreview(plan);
             previewText.Text=$"{plan.Moves.Count} matched; {plan.Skipped} skipped.\n"+string.Join("\n",plan.Moves.Select(m=>$"{m.Window.Title} → {m.Target.Width} × {m.Target.Height}"));
         });
         Button(groupActions,"Apply restore",()=>{var plan=preview ?? throw new InvalidOperationException("Preview a group first."); preview=null; var r=controller.Apply(plan); report($"Restore requests: {r.Applied}; skipped: {r.Skipped}; errors: {r.Errors.Count}. "+string.Join(" ",r.Errors));});
@@ -45,7 +50,7 @@ public sealed class WorkspaceView : UserControl {
             var group=Selected(); var dialog=new ContentDialog {Title="Remove workspace?",Content=$"Remove {group.Name} from the library? Its windows will stay open.",PrimaryButtonText="Remove",CloseButtonText="Cancel",XamlRoot=XamlRoot};
             ConfirmRemoval(dialog,group);
         });
-        panel.Children.Add(editActions); Content=new ScrollViewer {Content=panel,VerticalScrollBarVisibility=ScrollBarVisibility.Auto};
+        panel.Children.Add(editActions); Content=Design.Page(panel,"Workspaces that hold your place","Build named groups, preview their layouts, and switch stages without losing your original window arrangement.","STAGE MANAGER");
         try {
             library=LibraryStore.Load(path);
             var legacy=Path.Combine(AppContext.BaseDirectory,"data","workspace.json");
@@ -68,6 +73,6 @@ public sealed class WorkspaceView : UserControl {
         LibraryStore.Save(path,next); library=next; Reload(); report("Workspace library saved locally.");
     }
     private void Button(StackPanel panel,string text,Action action) {
-        var button=new Button {Content=text}; button.Click+=(_,_)=>{try{if(blocked() && text is "Stage group" or "Apply restore")throw new InvalidOperationException("End focus/fullscreen before changing workspaces.");action();}catch(Exception ex){report(ex.Message);}}; panel.Children.Add(button);
+        var button=new Button {Content=text}; button.Click+=(_,_)=>{try{if(blocked() && text is "Stage group" or "Apply restore")throw new InvalidOperationException("End focus/fullscreen before changing workspaces.");action();}catch(Exception ex){report(ex.Message);}}; Buttons[text]=button;panel.Children.Add(button);
     }
 }

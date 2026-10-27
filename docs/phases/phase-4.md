@@ -2,27 +2,27 @@
 
 [Documentation](../README.md) · [Roadmap](../roadmap.md) · [Verification](../verification.md)
 
-**Status:** Basic in-app running-app panel, introduced in v0.2.0.
+**Status:** Advanced scope implemented in v0.5.0.
 
 ## Delivered scope
 
-Group current windows by executable path and show one button per running app. Repeated clicks cycle through that app's eligible windows. Each click re-enumerates windows before requesting activation.
+An in-app dock and a separate floating native window show running apps and persistent app pins. Repeated clicks cycle running windows; a closed pinned executable launches only after an explicit click. Optional auto-hide collapses the floating dock to an edge strip.
 
 ## Use the feature
 
-Open Overview & FlowDock, refresh the panel, then click an app button. Click again to advance through its windows. Refresh after applications open or close to update the displayed app groups.
+Pin an app from a window card. Use Show floating dock in Overview & FlowDock, optionally enabling auto-hide. Hover over the edge strip to reveal it; Hide floating dock closes it. Unpin from the app's window card or the saved pin-management list, including closed apps. Choose a display before opening the dock to place it there; the selected device preference persists.
 
 ## Verification evidence
 
-[v0.2.0 verification](../verification-v0.2.0.md) records shell/panel rendering and native activation behavior. Dock cycling itself has not been comprehensively exercised end to end through the UI.
+Controller checks cover pin validation/deduplication/storage. Actual UI checks cover pinning, the owned floating window, automatic idle collapse, and clean close. Topology-aware positioning exists but physical multi-monitor changes need testing. See the [current verification report](../verification-v0.5.0.md).
 
 ## Remaining work and boundaries
 
-A floating dock, auto-hide, user-selected pins, richer icons/previews, monitor placement, and full keyboard/accessibility validation remain unfinished. The panel does not launch closed or pinned applications, replace the Windows taskbar, or bypass Windows activation policies.
+Pins are limited to 24 absolute executable paths captured from running apps. The app does not replace the taskbar. Closed-pin launch, cross-monitor dock movement, keyboard focus and long-duration behavior need broader manual coverage. Native collapse/reveal was visually checked on the installed build.
 
 ## Implementation map
 
-`DesktopOverviewView.cs`.
+`DesktopOverviewView.cs`, `FloatingDock.cs`, `DockPreferences.cs`.
 
 ---
 

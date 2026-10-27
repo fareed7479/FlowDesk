@@ -1,43 +1,41 @@
 # Known limitations
 
-[Documentation](README.md) · [Verification](verification.md) · [Roadmap](roadmap.md)
+[Documentation](README.md) · [Verification](verification.md) · [Compatibility](compatibility.md)
 
-These limits apply to the v0.4.0 development prototype.
+These boundaries apply to v0.5.0. Advanced desktop features are implemented; production qualification is incomplete.
 
-## Product completeness
+## Desktop behavior
 
-- Stage Manager implements window groups and switching, without the full visual stage experience or durable stage crash recovery.
-- Mission Control is a searchable title/app list, without live thumbnails, monitor organization, or virtual-desktop management.
-- FlowDock is an in-app running-app panel, without a floating/auto-hide dock or user-selected pins.
-- FlowControl opens Windows Settings but does not implement a comprehensive set of system-setting controls.
-- Packaging, signing, startup opt-in, updating, store publication, and a complete install/uninstall lifecycle are pending.
+The app uses a native navigation shell, theme-aware surfaces, live window previews, and optional floating dock. Live DWM content can be unavailable for minimized/protected windows; cards provide a fallback. The overview renders at most 36 matching preview cards, so narrow search for larger inventories.
 
-## Windows and application behavior
+Display grouping/filtering and move/undo are implemented. Real mixed-DPI/multi-monitor/hot-plug compatibility remains unqualified. Windows virtual-desktop management and broad Windows system-setting controls are outside the implementation.
 
-Only Windows 11 x64 build 26200 is represented by the recorded end-to-end runs. Mixed DPI, multi-monitor changes, other hardware, large inventories, and protected/elevated or unresponsive apps need broader testing.
+Native mutations can partially succeed. Known unresponsive windows are rejected, and inventory refresh runs off the UI thread in FlowControl/overview. Some native calls remain synchronous; an app can become unresponsive after the check. Windows may decline foreground activation.
 
-Inventory refresh is explicit in the basic panels. Apps may enforce minimum sizes, reject positioning, or deny foreground activation. Native calls are synchronous and can delay the UI. Operations may partially succeed; request counts do not guarantee identical visual results across applications.
+Saved desktop layouts restore already-running windows matched by executable path/title. They do not relaunch missing apps or restore unsaved documents. Ambiguous or changed saved-title matches are skipped. Managed stage/focus recovery separately supports title changes through process identity and per-window markers.
 
-Desktop workspace restore targets existing windows. Executable-path/title matching can skip changed document titles or ambiguous matches. It does not reopen missing applications, recover application documents, or recreate unsaved work. Basic layout restore is rectangle-oriented; focus/fullscreen recovery separately preserves managed native placement and frame state.
+## Persistence and recovery
 
-Borderless fullscreen is not exclusive game fullscreen. The app has no elevation bypass. Focus quiets FlowDesk banners and minimizes selected distractions; it does not set Windows Do Not Disturb, change global privacy settings, or suppress every other app.
+Stage and focus/fullscreen original states are journaled before mutation. Startup attempts restoration, skips unavailable/identity-changed windows, and retains failed work for retry. Unsupported/corrupt journals are preserved and block new corresponding sessions until addressed. Recovery does not restore application documents or lost application processes.
 
-## Notifications and activation
+Layout undo is one level and memory-only. Activity history is session-only. Saved URLs, titles, paths and preferences are local plaintext. Development builds use adjacent data; installed builds use stable installation data. Back up before cleanup, migration or manual repair.
 
-The notification center contains FlowDesk events only. Windows may suppress banners according to app/system policy. Recorded tests cover stored Windows notification payloads and cold/warm protocol activation; a physical click on a Windows popup was not automated.
+## Focus and notifications
 
-Tray double-click has not been established by the recorded end-to-end suites. Closing the main window exits FlowDesk.
+Borderless fullscreen is not exclusive game fullscreen. Focus minimizes selected distractions and quiets FlowDesk banners. It does not control global Windows Do Not Disturb or other apps' notifications.
+
+The center contains FlowDesk events only. Windows controls native banner visibility. Stored payload and cold/warm activation are tested separately; a physical banner click was not automated. Tray double-click and broad assistive-technology coverage remain unestablished.
 
 ## FlowWeb
 
-The full browser/UI test used isolated Chromium, not personal Chrome or Edge profiles. Actual branded-browser UI validation and enterprise browser policy scenarios remain pending. Personal extension loading is manual, and the extension is not store-published.
+Sharing is explicit and session-based, restricted to normal HTTP/HTTPS tabs. Incognito is disabled. Limits: four connections, 50 shared tabs per connection, 20 saved groups, and 25 URLs per workspace. Disconnection clears live metadata.
 
-Sharing is opt-in, session-based, and limited to normal HTTP/HTTPS tabs. Incognito is disabled. The bridge accepts up to four connections, each sharing at most 50 tabs. Browser workspaces allow up to 25 URLs each and 20 saved groups.
+Browser workspaces reopen URLs in a new window; history, login state, forms, media state and scroll position are not restored. There are no page content scripts or arbitrary OS-command capabilities.
 
-Restoration opens URLs in a new browser window; it does not restore history, login state, form data, media state, or scroll position. Saved URLs are plaintext. The extension has no page-content scripts or arbitrary OS-command interface.
+End-to-end testing used isolated Chromium. Actual Edge UI/personal-profile and enterprise-policy validation remain pending. The extension is not store-published.
 
-## Recovery and distribution
+## Distribution
 
-One-step undo, activity history, and stage snapshots are memory-only. Durable recovery covers fullscreen/focus windows; it skips missing or identity-changed windows and retains failed restoration work for retry. Invalid recovery data needs manual attention.
+Self-contained package creation, checksum validation, local install/update, rollback and owned removal are implemented. Sign-in launch and native browser registration are opt-in. Signing requires an existing authorized certificate; no trusted certificate was available for this build.
 
-Data lives next to development output. Back it up before cleaning the build directory. Self-contained output is not proof of clean-machine portability; runtime dependencies, signing, installer behavior, upgrade migration, and rollback still need release qualification.
+Clean-machine prerequisites, trusted signing/timestamping, an online update service, signed graphical installer, extension store publication and broader release qualification remain pending. A local SHA256 is an integrity check, not publisher authentication. See [distribution](distribution.md).

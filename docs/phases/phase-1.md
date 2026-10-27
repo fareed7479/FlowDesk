@@ -6,7 +6,7 @@
 
 ## Delivered scope
 
-Detect eligible visible top-level windows; position selected windows in 1–4 columns; save a single layout; preview and apply restore; undo one successful layout operation. The WinUI shell includes a Settings entry point and a basic tray icon.
+Detect eligible visible top-level windows; position selected windows in 1–4 columns; save a single layout; preview and apply restore; undo one successful layout operation. The redesigned WinUI shell includes adaptive navigation, appearance settings, and a basic tray icon. v0.5.0 adds event-driven background inventory refresh.
 
 ## Use the feature
 
@@ -20,7 +20,7 @@ Saved layouts match already-running windows by executable path and title; missin
 
 ## Verification evidence
 
-[v0.1.0](../verification-v0.1.0.md) records ten assertions; [v0.1.1](../verification-v0.1.1.md) records 18, including native split/undo/restore readback and a closed-window stale preview. The latest [v0.4.0 suite](../verification-v0.4.0.md) retains controller regression coverage.
+[v0.1.0](../verification-v0.1.0.md) records ten assertions; [v0.1.1](../verification-v0.1.1.md) records 18, including native split/undo/restore readback and a closed-window stale preview. The latest [v0.5.0 suite](../verification-v0.5.0.md) retains controller regression coverage.
 
 ## Remaining work and boundaries
 
