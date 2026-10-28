@@ -18,6 +18,10 @@ FlowDesk v0.6.0 is an advanced desktop preview. This documentation separates imp
 | [Distribution](distribution.md) | Package, install, update, roll back and remove |
 | [Compatibility](compatibility.md) | Actual Windows evidence and environments still unqualified |
 
+## Hybrid frontend modules
+
+[Module 2 · WebView2 IPC and DPI bounds](modules/module-2.md) includes the complete native bridge, host initialization and [actual WebView2 verification](modules/module-2-verification.md). This separate module sequence does not replace the phase roadmap or claim that the React frontend is complete.
+
 ## Every phase
 
 | Phase | Guide | Current scope |

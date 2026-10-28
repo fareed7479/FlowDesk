@@ -11,6 +11,7 @@ public partial class App : Application {
         lock(gate) {if(window is null) {pendingNotice=id;return;}window.DispatcherQueue.TryEnqueue(()=>window?.ShowNotice(id));}
     }
     protected override void OnLaunched(LaunchActivatedEventArgs args) {
+        if(Program.Module2Checks){_ = Module2WorkflowChecks.Run();return;}
         window=new MainWindow();window.Activate();
         lock(gate){if(pendingNotice.HasValue){window.ShowNotice(pendingNotice.Value);pendingNotice=null;}}
         if(Program.RequestedNotice.HasValue)window.ShowNotice(Program.RequestedNotice.Value);

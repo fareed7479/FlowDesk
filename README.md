@@ -51,6 +51,10 @@ pwsh -ExecutionPolicy Bypass -File .\scripts\run.ps1
 
 The build script also runs controller/native checks using temporary fixture windows. FlowWeb is optional and has its own [browser setup guide](docs/flowweb.md).
 
+## Hybrid frontend development
+
+[Module 2](docs/modules/module-2.md) adds a validated WebView2 JSON bridge, native window/scene commands, and DPI-aware DWM container bounds. It includes a complete compiled initialization window and actual WebView2 checks. The existing WinUI interface remains in place; React components are later modules.
+
 ## Phase progress
 
 “Implemented” describes the listed development scope, not complete compatibility or release readiness.

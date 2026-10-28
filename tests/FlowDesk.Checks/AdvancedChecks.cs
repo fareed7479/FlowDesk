@@ -4,6 +4,14 @@ using FlowDesk.Core;
 using FlowDesk.Windows;
 internal static class AdvancedChecks {
     internal static void Preferences(Action<bool,string> check) {
+        var pixels=DpiBoundsHelper.CssToClientPixels(new(10.25,20.5,99.5,40),1.5,new(24,36),new(24,36,1000,800));
+        check(pixels==new Rect(39,66,150,61),"CSS thumbnail bounds include destination offset and outward fractional DPI rounding");
+        var negativeOrigin=DpiBoundsHelper.CssToClientPixels(new(4,8,100,50),2,new(-1200,-200),new(-1200,-200,800,600));
+        check(negativeOrigin==new Rect(-1192,-184,200,100),"thumbnail geometry preserves negative physical origins without global screen scaling");
+        bool badDpi=false;try{DpiBoundsHelper.CssToClientPixels(new(0,0,10,10),double.NaN,new(0,0),new(0,0,100,100));}catch(ArgumentOutOfRangeException){badDpi=true;}
+        check(badDpi,"nonfinite thumbnail scale is rejected");
+        bool clipped=false;try{DpiBoundsHelper.CssToClientPixels(new(90,0,20,10),1,new(0,0),new(0,0,100,100));}catch(ArgumentOutOfRangeException){clipped=true;}
+        check(clipped,"clipped thumbnail rectangles must be hidden instead of stretched");
         var input=new[]{new Rect(-1600,0,800,600),new Rect(-800,0,800,600)};var canvas=new Rect(260,20,1200,700);var fitted=StageLayouts.Fit(input,canvas);
         check(fitted.All(r=>r.X>=canvas.X && r.Y>=canvas.Y && (long)r.X+r.Width<=(long)canvas.X+canvas.Width && (long)r.Y+r.Height<=(long)canvas.Y+canvas.Height),"stage fitting reserves a canvas with negative source origins");
         check(fitted[0].X+fitted[0].Width==fitted[1].X && input[0].X==-1600,"stage fitting preserves relative layouts without mutating saved bounds");

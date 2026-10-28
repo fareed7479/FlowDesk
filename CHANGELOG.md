@@ -4,6 +4,15 @@
 
 These entries describe committed development versions. They are not claims of signed releases, installers, or store publication.
 
+## Unreleased — Hybrid Module 2
+
+- Added a local-document WebView2 bridge with typed JSON, native window/scene operations, identity-safe commands and native lifecycle/focus events.
+- Added per-monitor destination DPI inspection, offset-aware CSS bounds conversion, viewport invalidation and owned thumbnail cleanup.
+- Added complete WebView2 host/window initialization, separate browser data and close-time stage recovery.
+- Verified 23 real WebView2 workflows, 125 native/controller assertions and 34 existing UI workflows.
+- Retained the current .NET 10 target and native UI; React and later visual modules remain separate.
+- [Module 2 guide](docs/modules/module-2.md) · [Verification](docs/modules/module-2-verification.md)
+
 ## v0.6.0 — Glass foundation and native stage strip
 
 - Added shared light/dark Acrylic surfaces, theme tokens, clearer page hierarchy and redesigned in-app notification cards.
