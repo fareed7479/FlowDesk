@@ -1,7 +1,7 @@
 param([string]$PackagePath,[string]$Sha256)
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot
-if(!$PackagePath){$PackagePath=Join-Path $root '.cache/dist/FlowDesk-0.5.0-win-x64.zip'}
+if(!$PackagePath){[xml]$props=Get-Content (Join-Path $root 'Directory.Build.props');$version=[string]$props.Project.PropertyGroup.Version;$PackagePath=Join-Path $root ".cache/dist/FlowDesk-$version-win-x64.zip"}
 if(!$Sha256){$Sha256=((Get-Content -Raw -LiteralPath ($PackagePath+'.sha256')).Trim() -split '\s+')[0]}
 if(Get-Process FlowDesk.App -ErrorAction SilentlyContinue){throw 'Close FlowDesk before actual package verification'}
 $installRoot=Join-Path $root ('.cache/real-package-'+[Guid]::NewGuid().ToString('N'))

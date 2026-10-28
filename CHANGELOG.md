@@ -4,6 +4,16 @@
 
 These entries describe committed development versions. They are not claims of signed releases, installers, or store publication.
 
+## v0.6.0 — Glass foundation and native stage strip
+
+- Added shared light/dark Acrylic surfaces, theme tokens, clearer page hierarchy and redesigned in-app notification cards.
+- Added a separate native stage strip with DWM previews, active/unavailable states, one-click switching and reserved layout space.
+- Moved stage mutation off the UI thread, serialized switching, retained durable recovery and matched session members after title changes.
+- Added native Composition entrances, motion-aware preview placement, reduced-motion preferences and high-contrast fallbacks.
+- Added geometry/session checks and expanded actual WinUI workflow coverage from 25 to 34 checks.
+- Created editable glass foundations, eight light/dark page designs and two linked staging states in a new private Figma file. Full design-to-code parity remains pending tool quota and visual inspection access.
+- [Redesign](docs/glass-redesign.md) · [Verification](docs/verification-v0.6.0.md)
+
 ## v0.5.0 — Advanced desktop and local distribution
 
 - Redesigned all pages around adaptive navigation, theme-aware cards, Mica, transitions, appearance preferences and a focus countdown.

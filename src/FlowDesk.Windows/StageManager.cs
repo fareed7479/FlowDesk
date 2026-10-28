@@ -8,6 +8,7 @@ public sealed class StageManager {
     private readonly string? journalPath;
     private readonly Dictionary<nint,ManagedSnapshot> original=[];
     private bool unreadable;
+    private readonly Dictionary<Guid,Dictionary<SavedWindow,ManagedIdentity>> bindings=[];
     public string? RecoveryError {get;private set;}
     public bool IsActive=>original.Count>0 || RecoveryError is not null;
     public Guid? ActiveGroupId {get;private set;}
@@ -30,9 +31,21 @@ public sealed class StageManager {
         File.WriteAllText(journalPath+".tmp",JsonSerializer.Serialize(new StageJournal(1,ActiveGroupId,original.Values.ToArray())));
         File.Move(journalPath+".tmp",journalPath,true);
     }
-    public StageResult Activate(WorkspaceGroup group) {
+    public RestorePlan Preview(WorkspaceGroup group,Rect? canvas=null,IReadOnlyList<DesktopWindow>? inventory=null) {
+        inventory??=service.Enumerate();var used=new HashSet<nint>();var moves=new List<PlannedMove>();int skipped=0;
+        bindings.TryGetValue(group.Id,out var remembered);
+        foreach(var saved in group.Workspace.Windows){
+            DesktopWindow? live=null;if(remembered is not null && remembered.TryGetValue(saved,out var identity))live=service.ResolveManaged(identity);
+            live??=Workspaces.Match(saved,inventory);
+            if(live is null || !used.Add(live.Handle)){skipped++;continue;}
+            moves.Add(new(live,Layouts.Clamp(saved.Bounds,service.WorkArea(live.Handle))));
+        }
+        if(canvas is not null){var fitted=StageLayouts.Fit(moves.Select(m=>m.Target).ToArray(),canvas);moves=moves.Select((m,i)=>m with{Target=fitted[i]}).ToList();}
+        return new(moves,skipped);
+    }
+    public StageResult Activate(WorkspaceGroup group,Rect? canvas=null) {
         if(RecoveryError is not null)throw new InvalidOperationException("Resolve stage recovery before switching groups. "+RecoveryError);
-        var plan=RestorePlanner.Create(group.Workspace,service.Enumerate(),w=>service.WorkArea(w.Handle));
+        var plan=Preview(group,canvas);
         if(plan.Moves.Count==0)return new(0,0,plan.Skipped,["No matching windows. Existing stage is unchanged."]);
         if(original.Count+plan.Moves.Count(m=>!original.ContainsKey(m.Window.Handle))>100)throw new InvalidOperationException("Leave Stage before managing more than 100 windows.");
         var added=new List<ManagedSnapshot>();
@@ -42,6 +55,8 @@ public sealed class StageManager {
                 if(!original.ContainsKey(move.Window.Handle)){var s=service.Track(move.Window);original.Add(move.Window.Handle,s);added.Add(s);}
             }
             Save(); // Durable original states precede every first mutation.
+            if(!bindings.TryGetValue(group.Id,out var remembered)){remembered=[];bindings[group.Id]=remembered;}
+            foreach(var saved in group.Workspace.Windows){var move=plan.Moves.FirstOrDefault(m=>m.Window.ProcessPath.Equals(saved.ProcessPath,StringComparison.OrdinalIgnoreCase) && (m.Window.Title==saved.Title || (remembered.TryGetValue(saved,out var known) && known.Handle==m.Window.Handle.ToInt64())));if(move is not null)remembered[saved]=original[move.Window.Handle].Identity;}
         } catch {foreach(var s in added){original.Remove((nint)s.Identity.Handle);service.Forget(s.Identity);}throw;}
         var errors=new List<string>();var desired=plan.Moves.Select(m=>m.Window.Handle).ToHashSet();int presented=0,minimized=0,skipped=plan.Skipped;DesktopWindow? focus=null;bool? focused=null;
         foreach(var move in plan.Moves) {
@@ -67,7 +82,7 @@ public sealed class StageManager {
             try {if(service.RestoreManaged(pair.Value))restored++;else skipped++;original.Remove(pair.Key);}
             catch(Exception ex)when(ex is System.ComponentModel.Win32Exception or InvalidOperationException or ArgumentException){errors.Add(ex.Message);}
         }
-        if(original.Count==0)ActiveGroupId=null;
+        if(original.Count==0){ActiveGroupId=null;bindings.Clear();}
         try{Save();}catch(Exception ex)when(ex is IOException or UnauthorizedAccessException){RecoveryError=ex.Message;errors.Add(ex.Message);}
         return new(restored,0,skipped,errors);
     }

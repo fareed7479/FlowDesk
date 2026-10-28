@@ -8,6 +8,10 @@
 
 Add an opt-in Manifest V3 extension, authenticated local native bridge, desktop tab list, activate/mute/pin commands, and explicitly saved URL workspaces. Include native-host installation/removal scripts and isolated-browser verification.
 
+## v0.6.0 integration
+
+FlowWeb uses the shared glass controls and page entrances. Real isolated-browser regression covers tab controls, confirmation and URL workspace reopening; personal Chrome/Edge coverage remains pending. See the [glass redesign guide](../glass-redesign.md).
+
 ## Use the feature
 
 Follow the [FlowWeb setup and usage guide](../flowweb.md). Build and register the native host, manually load the extension in your browser, enable the desktop bridge, and choose Connect & share tabs in its popup. Sharing starts only after those explicit actions. Saved workspace restore requires confirmation and opens a new browser window.

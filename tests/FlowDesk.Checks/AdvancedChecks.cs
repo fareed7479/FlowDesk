@@ -4,6 +4,10 @@ using FlowDesk.Core;
 using FlowDesk.Windows;
 internal static class AdvancedChecks {
     internal static void Preferences(Action<bool,string> check) {
+        var input=new[]{new Rect(-1600,0,800,600),new Rect(-800,0,800,600)};var canvas=new Rect(260,20,1200,700);var fitted=StageLayouts.Fit(input,canvas);
+        check(fitted.All(r=>r.X>=canvas.X && r.Y>=canvas.Y && (long)r.X+r.Width<=(long)canvas.X+canvas.Width && (long)r.Y+r.Height<=(long)canvas.Y+canvas.Height),"stage fitting reserves a canvas with negative source origins");
+        check(fitted[0].X+fitted[0].Width==fitted[1].X && input[0].X==-1600,"stage fitting preserves relative layouts without mutating saved bounds");
+        check(StageLayouts.Fit([],canvas).Length==0,"empty stage fitting remains empty");
         var p=DockPreferences.Empty.Pin(@"C:\Example\Editor.exe").Pin(@"c:\example\EDITOR.exe");
         check(p.Pins.Length==1,"dock pins deduplicate executable paths");
         check(p.Unpin(@"c:\example\editor.exe").Pins.Length==0 && p.Pins.Length==1,"dock unpin preserves earlier snapshot");
@@ -44,7 +48,15 @@ internal static class AdvancedChecks {
             check(result.Presented==2 && !recovered.IsActive && !File.Exists(path),"stage recovery restores renamed managed windows and clears the journal");
             check(live.Select((w,i)=>service.CaptureState(w).ShowCommand==initial[i].ShowCommand && service.CaptureState(w).NormalBounds==initial[i].NormalBounds).All(b=>b),"stage restart recovery restores native show states and normal bounds");
             SetWindowText(fixtures[0].Handle,fixtures[0].Title);
-            File.WriteAllText(path,"{\"Schema\":99,\"Windows\":[]}");var invalid=new StageManager(service,path);
+            var sessionStage=new StageManager(service,path);
+            var firstGroup=new WorkspaceGroup(Guid.NewGuid(),"Research",Workspaces.Capture([fixtures[0]]));var secondGroup=new WorkspaceGroup(Guid.NewGuid(),"Writing",Workspaces.Capture([fixtures[1]]));
+            sessionStage.Activate(firstGroup);SetWindowText(fixtures[0].Handle,fixtures[0].Title+" renamed");sessionStage.Activate(secondGroup);
+            check(sessionStage.Preview(firstGroup).Moves.Count==1,"stage previews retain a marked member after its document title changes");
+            var switched=sessionStage.Activate(firstGroup,new Rect(service.WorkArea(fixtures[0].Handle).X+260,service.WorkArea(fixtures[0].Handle).Y,600,500));
+            check(switched.Presented==1 && service.IsMinimized(fixtures[1]),"stage strip switching restores renamed members and minimizes the inactive stage");
+            sessionStage.Leave();SetWindowText(fixtures[0].Handle,fixtures[0].Title);
+            check(!sessionStage.IsActive && service.CaptureState(fixtures[0]).NormalBounds==initial[0].NormalBounds,"leaving a fitted stage restores its original native bounds");
+File.WriteAllText(path,"{\"Schema\":99,\"Windows\":[]}");var invalid=new StageManager(service,path);
             check(invalid.RecoveryError is not null && invalid.IsActive && invalid.Leave().Errors.Count==1 && File.ReadAllText(path).Contains("99"),"unsupported stage journal is preserved and blocks mutations");
             File.Delete(path);File.WriteAllText(path,"blocked");
             var beforeFailure=service.CaptureState(fixtures[0]);var blockedStage=new StageManager(service,Path.Combine(path,"journal.json"));bool failed=false;

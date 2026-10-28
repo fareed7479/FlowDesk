@@ -6,7 +6,7 @@
 
 Live previews · Recoverable workspaces · Floating dock · Focus · Browser controls
 
-**v0.5.0 · Advanced desktop preview · C# / .NET 10 · WinUI 3 · Windows x64**
+**v0.6.0 · Advanced desktop preview · C# / .NET 10 · WinUI 3 · Windows x64**
 
 [Get started](docs/getting-started.md) · [Documentation](docs/README.md) · [Phase roadmap](docs/roadmap.md) · [Verification](docs/verification.md)
 
@@ -18,14 +18,14 @@ Live previews · Recoverable workspaces · Floating dock · Focus · Browser con
 
 FlowDesk brings window layouts, named workspaces, focus sessions, notifications, and optional browser controls into one native desktop app. Its FlowControl window is the starting point; the sidebar opens each feature.
 
-> **Project status:** The advanced desktop scope is implemented with a redesigned interface, live previews, recoverable stages, and a floating dock. Local install/update/rollback tooling is available. Trusted signing, store publication, clean-machine and broader hardware qualification are still pending.
+> **Project status:** This preview includes a shared glass design system, a native stage strip, live previews, recoverable stages, and a floating dock. The new Figma designs extend beyond the implementation; full design parity and visual qualification remain pending. Local install/update/rollback tooling is available. Trusted signing, store publication, clean-machine and broader hardware qualification are still pending.
 
 ## What you can use today
 
 | Experience | Available behavior |
 | --- | --- |
 | **FlowControl** | Automatically refresh windows, arrange 1–4 columns, preview saved layouts, restore matching windows, and undo one layout operation. |
-| **Workspaces & Stage** | Save named groups, inspect live previews, switch stages, and recover original managed placements after interruption. |
+| **Workspaces & Stage** | Save named groups, use a separate live stage strip, reserve stage space, switch groups, and recover original managed placements after interruption. |
 | **Overview & FlowDock** | Browse live window cards by display, search/activate/move windows, and use a floating auto-hide dock with persistent pins. |
 | **Focus & fullscreen** | Run timed sessions with a countdown, minimize selected distractions, use borderless fullscreen, and restore managed windows. |
 | **Notifications** | Review persistent FlowDesk events, manage unread cards, and opt into Windows banners. |
@@ -59,7 +59,7 @@ The build script also runs controller/native checks using temporary fixture wind
 | :---: | --- | --- |
 | [0](docs/phases/phase-0.md) | Environment audit and local toolchain | Complete for audited machine |
 | [1](docs/phases/phase-1.md) | Window engine and FlowControl | Prototype implemented |
-| [2](docs/phases/phase-2.md) | Workspaces and Stage Manager | Live group previews and durable recovery |
+| [2](docs/phases/phase-2.md) | Workspaces and Stage Manager | Native stage strip, live previews and durable recovery |
 | [3](docs/phases/phase-3.md) | Mission Control | Live previews and display organization |
 | [4](docs/phases/phase-4.md) | FlowDock | Floating dock, saved pins and auto-hide |
 | [5](docs/phases/phase-5.md) | FlowDesk notification center | Implemented |
@@ -67,19 +67,19 @@ The build script also runs controller/native checks using temporary fixture wind
 | [7](docs/phases/phase-7.md) | Optional FlowWeb integration | Implemented; branded-browser validation pending |
 | [8](docs/phases/phase-8.md) | Packaging and distribution | Local lifecycle tooling; trusted release pending |
 
-The native interface includes an adaptive sidebar, theme-aware cards, Mica, page transitions, light/dark/system appearance, and optional sign-in launch. See [distribution](docs/distribution.md) for the self-contained package, local updates and rollback, and the [roadmap](docs/roadmap.md) for remaining release gates.
+The native interface includes an adaptive sidebar, shared Acrylic glass surfaces, Mica, native Composition entrances, light/dark/system appearance, reduced motion, and high-contrast resources. Read the [glass redesign guide](docs/glass-redesign.md) for the implementation and remaining design work. See [distribution](docs/distribution.md) for the self-contained package, local updates and rollback, and the [roadmap](docs/roadmap.md) for remaining release gates.
 
 ## Tested, with clear boundaries
 
 The last application verification was on Windows 11 x64 build 26200:
 
 - Build completed with **zero warnings and errors**.
-- **115** controller/native assertions and **8** extension/native-host tests passed.
+- **121** controller/native assertions and **8** extension/native-host tests passed.
 - **8** isolated-browser checks and **8** FlowWeb UI workflows passed.
-- **25** advanced UI workflows and **14** fixture distribution checks passed.
+- **34** advanced UI workflows and **14** fixture distribution checks passed.
 - **23** earlier desktop workflows and notification activation checks passed again.
 
-Browser end-to-end testing used isolated Chromium. Personal Chrome/Edge profiles, actual Edge UI behavior, mixed-DPI and broader hardware compatibility still need validation. These are recorded results from v0.5.0, not a CI badge or a guarantee for every machine. See the [compatibility matrix](docs/compatibility.md). Read the [verification guide](docs/verification.md) and [known limitations](docs/limitations.md).
+Browser end-to-end testing used isolated Chromium. Personal Chrome/Edge profiles, actual Edge UI behavior, mixed-DPI and broader hardware compatibility still need validation. These are local results, not a CI badge or a guarantee for every machine. Full Figma comparison is quota-blocked; native visual review covers only the installed dark FlowControl and empty Workspaces views. See the [compatibility matrix](docs/compatibility.md). Read the [verification guide](docs/verification.md) and [known limitations](docs/limitations.md).
 
 ## Explore the repository
 

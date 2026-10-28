@@ -44,8 +44,8 @@ public sealed class MainWindow : Window {
         controller=new(service);
         NoticeCenter=new NotificationCenter(Path.Combine(Program.DataDirectory,"notifications.json"),Program.Notifications);
         Modes=new DesktopModes(service,Path.Combine(Program.DataDirectory,"mode-recovery.json"));
-        ModesView? modePanel=null;
-        recoveryHotkey=new RecoveryHotkey(()=>{modePanel?.EndSession("Session ended by shortcut");if(AppWindow.Presenter.Kind==Microsoft.UI.Windowing.AppWindowPresenterKind.FullScreen)ToggleShellFullscreen();BringForward();});
+        ModesView? modePanel=null;WorkspaceView? stagePanel=null;
+        recoveryHotkey=new RecoveryHotkey(()=>{modePanel?.EndSession("Session ended by shortcut");if(stagePanel?.Stage.IsActive==true)_=stagePanel.LeaveStage();if(AppWindow.Presenter.Kind==Microsoft.UI.Windowing.AppWindowPresenterKind.FullScreen)ToggleShellFullscreen();BringForward();});
         Title="FlowDesk · Your desktop, in flow";
         AppWindow.Resize(new global::Windows.Graphics.SizeInt32(1240,900));
         var panel=new StackPanel { Padding=new Thickness(24), Spacing=12 };
@@ -89,33 +89,33 @@ public sealed class MainWindow : Window {
         var shellStatus=new TextBlock {Text="Ready",TextWrapping=TextWrapping.Wrap,Margin=new Thickness(16)};
         var activity=new ListView();
         void Report(string message) { shellStatus.Text=message; history.Insert(0,$"{DateTime.Now:HH:mm:ss}  {message}"); if(history.Count>100) history.RemoveAt(history.Count-1); activity.ItemsSource=history.ToArray(); NoticeCenter.Publish("FlowDesk",message.Length>2000?message[..2000]:message); }
-        var workspaceView=WorkspacePanel=new WorkspaceView(service,controller,Report,()=>Modes.IsActive);
+        var workspaceView=WorkspacePanel=stagePanel=new WorkspaceView(service,controller,Report,()=>Modes.IsActive);
         WebPanel=new FlowWebView(()=>Modes.IsActive);
         ModePanel=modePanel=new ModesView(service,Modes,NoticeCenter,()=>workspaceView.Stage.IsActive,()=>recoveryHotkey.Available,ToggleShellFullscreen);
         NoticePanel=new NotificationsView(NoticeCenter,Program.Notifications);
         OverviewPanel=new DesktopOverviewView(service,Report,()=>Modes.IsActive || workspaceView.Stage.IsActive);
-        var shell=new Grid();shell.RequestedTheme=AppData.LoadTheme();
+        var shell=Design.Canvas();shell.RequestedTheme=AppData.LoadTheme();
         var navigation=Navigation;navigation.PaneDisplayMode=NavigationViewPaneDisplayMode.Auto;navigation.IsBackButtonVisible=NavigationViewBackButtonVisible.Collapsed;navigation.IsSettingsVisible=false;navigation.OpenPaneLength=238;navigation.ExpandedModeThresholdWidth=940;navigation.CompactModeThresholdWidth=720;navigation.IsPaneOpen=true;
         var brand=new StackPanel{Spacing=4,Margin=new Thickness(18,16,16,24)};
         brand.Children.Add(new TextBlock{Text="◈  FlowDesk",FontSize=24,FontWeight=Microsoft.UI.Text.FontWeights.SemiBold});brand.Children.Add(Design.Caption("YOUR DESKTOP, IN FLOW"));navigation.PaneCustomContent=brand;
-        var version=new TextBlock{Text="v0.5.0 · Desktop preview",Margin=new Thickness(20),FontSize=12,Opacity=.6};navigation.PaneFooter=version;
+        var version=new TextBlock{Text="v0.6.0 · Glass preview",Margin=new Thickness(20),FontSize=12,Opacity=.6};navigation.PaneFooter=version;
         void UpdatePane(){brand.Visibility=navigation.DisplayMode==NavigationViewDisplayMode.Expanded && navigation.IsPaneOpen?Visibility.Visible:Visibility.Collapsed;version.Visibility=brand.Visibility;}
         navigation.DisplayModeChanged+=(_,_)=>UpdatePane();navigation.PaneOpened+=(_,_)=>UpdatePane();navigation.PaneClosed+=(_,_)=>UpdatePane();navigation.Loaded+=(_,_)=>UpdatePane();
-        var labels=new[]{"FlowControl","Workspaces & Stage","Overview & FlowDock","Focus & fullscreen","Notifications","Activity","FlowWeb","Settings"};
+        var labels=new[]{"FlowControl","Workspaces","Overview","Focus","Notifications","Activity","FlowWeb","Settings"};
         var glyphs=new[]{"\uE80F","\uE8F1","\uE7F4","\uE708","\uE7F4","\uE81C","\uE774","\uE713"};
         var pages=new UIElement[]{Design.Page(panel,"Make space for what matters","Arrange your windows, preview a saved layout, and return to a workspace in a few clicks.","FLOWCONTROL"),workspaceView,OverviewPanel,ModePanel,NoticePanel,Design.Page(new StackPanel{Children={activity}},"Your workspace timeline","Recent actions from this session.","ACTIVITY",0),WebPanel,new AppearanceView(shell)};
         var items=new List<NavigationViewItem>();
         for(int i=0;i<labels.Length;i++){var item=new NavigationViewItem{Content=labels[i],Icon=new FontIcon{Glyph=glyphs[i]},Tag=i};Design.Name(item,labels[i]);items.Add(item);navigation.MenuItems.Add(item);}
-        noticeTab=items[4];NoticeCenter.Changed+=()=>noticeTab.Content=$"Notifications ({NoticeCenter.Unread})";
+        noticeTab=items[4];noticeTab.Content=$"Notifications ({NoticeCenter.Unread})";NoticeCenter.Changed+=()=>noticeTab.Content=$"Notifications ({NoticeCenter.Unread})";
         navigation.SelectionChanged+=(_,e)=>{if(e.SelectedItem is NavigationViewItem item && item.Tag is int index && Tabs.SelectedIndex!=index)Tabs.SelectedIndex=index;};
         Tabs.Changed+=index=>{if(index<0 || index>=pages.Length)return;navigation.SelectedItem=items[index];navigation.Content=pages[index];};
         shell.RowDefinitions.Add(new RowDefinition{Height=new GridLength(1,GridUnitType.Star)});shell.RowDefinitions.Add(new RowDefinition{Height=GridLength.Auto});shell.Children.Add(navigation);
         shellStatus.FontSize=12;shellStatus.Opacity=.8;Grid.SetRow(shellStatus,1);shell.Children.Add(shellStatus);Content=shell;Tabs.SelectedIndex=0;
-        AppWindow.Closing+=(_,e)=>{ if(Modes.IsActive){ModePanel.EndSession("Session ended on close");if(Modes.Session is not null){e.Cancel=true;return;}} if(workspaceView.Stage.IsActive) { var result=workspaceView.Stage.Leave(); if(workspaceView.Stage.IsActive) {e.Cancel=true; Report("Could not restore all staged windows. Try Leave Stage before closing. "+string.Join(" ",result.Errors));} } };
+        AppWindow.Closing+=(_,e)=>{if(workspaceView.IsBusy){e.Cancel=true;Report("Finish switching stages before closing FlowDesk.");return;} if(Modes.IsActive){ModePanel.EndSession("Session ended on close");if(Modes.Session is not null){e.Cancel=true;return;}} if(workspaceView.Stage.IsActive) { var result=workspaceView.Stage.Leave(); if(workspaceView.Stage.IsActive) {e.Cancel=true; Report("Could not restore all staged windows. Try Leave Stage before closing. "+string.Join(" ",result.Errors));} } };
         tray=new System.Windows.Forms.NotifyIcon { Icon=System.Drawing.SystemIcons.Application,Text="FlowDesk — double-click to open",Visible=true };
         tray.DoubleClick+=(_,_)=>DispatcherQueue.TryEnqueue(()=>Activate());
         inventoryEvents.Changed+=()=>inventoryDirty=true;inventoryTimer.Tick+=(_,_)=>{if(inventoryDirty && Tabs.SelectedIndex==0){inventoryDirty=false;Refresh(false);}};inventoryTimer.Start();
-        Closed+=(_,_)=>{inventoryTimer.Stop();inventoryEvents.Dispose();if(Modes.Session is not null)ModePanel.EndSession("Session restored on window close");OverviewPanel.Dispose();WebPanel.Dispose();ModePanel.Dispose();recoveryHotkey.Dispose();tray.Dispose();}; Refresh();
+        Closed+=(_,_)=>{inventoryTimer.Stop();inventoryEvents.Dispose();if(Modes.Session is not null)ModePanel.EndSession("Session restored on window close");WorkspacePanel.Dispose();OverviewPanel.Dispose();WebPanel.Dispose();ModePanel.Dispose();recoveryHotkey.Dispose();tray.Dispose();}; Refresh();
     }
     private void ClearPreview() { preview=null; previewText.Text="Preview a saved workspace before applying it."; }
     private void ShowResult(MoveResult result) { status.Text=$"Position requests: {result.Applied}; skipped: {result.Skipped}; errors: {result.Errors.Count}. Apps may enforce their own sizes."+(result.Errors.Count>0 ? "\n"+string.Join("\n",result.Errors):""); }

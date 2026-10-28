@@ -8,6 +8,10 @@
 
 Run focus timers of 1–240 whole minutes with a live countdown/progress card; optionally apply borderless fullscreen; minimize explicitly selected distractions; persist executable-path exclusions; quiet FlowDesk banners. Support standalone target fullscreen and FlowDesk's own native fullscreen presenter. Journal managed changes for restart recovery.
 
+## v0.6.0 integration
+
+Focus uses the shared glass controls, semantic text and page entrances. Native fullscreen, exclusions, timed restoration and recovery behavior are retained. See the [glass redesign guide](../glass-redesign.md).
+
 ## Use the feature
 
 1. Leave Stage, then open Focus & fullscreen and refresh windows.

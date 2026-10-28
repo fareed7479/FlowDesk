@@ -4,13 +4,13 @@
 
 ## Latest recorded results
 
-Application version **v0.5.0**, tested on **2026-10-27** on Windows 11 x64 build 26200 with .NET SDK 10.0.403.
+Application version **v0.6.0**, tested on **2026-10-28** on Windows 11 x64 build 26200 with .NET SDK 10.0.403.
 
 | Check | Recorded outcome |
 | --- | --- |
 | Solution build | Passed; zero warnings and errors |
-| Controller/native assertions | 115 passed |
-| Advanced WinUI workflows | 25 passed |
+| Controller/native assertions | 121 passed |
+| Advanced WinUI workflows | 34 passed |
 | Fixture distribution workflows | 14 passed |
 | Actual published package | Installation, launch, stable data, cleanup and removal passed |
 | Extension/native-host tests | 8 passed |
@@ -73,9 +73,10 @@ Each report is a snapshot of that version; later features can supersede earlier 
 | v0.3.0 | [Notifications, focus/fullscreen, activation, and recovery](verification-v0.3.0.md) |
 | v0.4.0 | [Browser bridge and full regression run](verification-v0.4.0.md) |
 | v0.5.0 | [Advanced desktop, compatibility fixtures and actual package lifecycle](verification-v0.5.0.md) |
+| v0.6.0 | [Glass, stage strip, motion and regression evidence](verification-v0.6.0.md) |
 
 ## What these results do not establish
 
 The suites use temporary fixture windows instead of moving existing user windows. They do not establish universal behavior across applications, monitors, DPI settings, Windows builds, or enterprise policies. The browser end-to-end run uses isolated Chromium; actual Edge and personal-profile installation remain manual. Notification payload/protocol testing does not substitute for an observed physical banner click.
 
-The new overview/dock and stage UI workflows are covered within the fixture scope described in the v0.5.0 report. Remaining visual/app/hardware coverage is limited. See individual phase pages and [limitations](limitations.md) before treating a component as release-ready.
+The new overview/dock and stage UI workflows are covered within the fixture scope described in the v0.6.0 report. Remaining visual/app/hardware coverage is limited. See individual phase pages and [limitations](limitations.md) before treating a component as release-ready.

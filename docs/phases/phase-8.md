@@ -8,6 +8,10 @@
 
 Self-contained Windows ZIP packaging, per-file hashes and archive checksum, optional Authenticode signing with an existing certificate, owned per-user installation, stable data storage, opt-in sign-in launch, explicit local updates, rollback, and data-preserving removal. Native notification cleanup is performed by the owned app before removal.
 
+## v0.6.0 integration
+
+The v0.6.0 archive includes the redesigned native app. The actual-package verifier derives the version from the project rather than hard-coding an older archive. See the [glass redesign guide](../glass-redesign.md).
+
 ## Use the feature
 
 Follow the [distribution guide](../distribution.md) to package, install, update, roll back or remove. Packages are local and updates explicit. Use an independently obtained expected SHA256; require trusted signatures when signed artifacts are available. Browser extension loading remains manual.

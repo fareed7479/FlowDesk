@@ -8,6 +8,8 @@
 
 Persist up to 100 FlowDesk event cards; show unread state; filter unread; mark read; dismiss; clear; opt into Windows banners and optional sound. Cards record in-app, quieted, submitted, or failed delivery. Strict notification links route to one app instance.
 
+The v0.6.0 in-app center uses glass cards with a single event hierarchy, delivery/read metadata, independent actions and a clear empty state. Only newly arriving cards animate while the center is visible. Native Windows banners retain their Windows appearance.
+
 ## Use the feature
 
 Select Notifications in the redesigned sidebar to review cards and preferences. Windows banners are opt-in and sound defaults to silent. Use Test notification to exercise delivery. Dismissing or clearing removes corresponding FlowDesk entries from Windows notification history. Activating a valid notification link opens the center and marks its card read.

@@ -2,13 +2,13 @@
 
 [Documentation](README.md) · [Verification](verification.md) · [Compatibility](compatibility.md)
 
-Current version: **v0.5.0**. The advanced desktop feature scope is implemented, including a redesigned interface, live previews, durable stage recovery, and a floating dock. Distribution tooling is available; the full product is still awaiting release qualification.
+Current version: **v0.6.0**. The preview includes native staging, shared glass surfaces, live previews, durable recovery, and a floating dock. Editable designs cover all eight pages; full implementation parity and visual qualification are still pending. Distribution tooling is available; the full product is still awaiting release qualification.
 
 | Phase | Delivered scope | Status | Guide |
 | :---: | --- | --- | --- |
 | 0 | Audited Windows machine and local SDK/cache workflow | Established | [Environment](phases/phase-0.md) |
 | 1 | Window engine, splits, preview/restore, undo, event-driven background inventory | Implemented prototype | [FlowControl](phases/phase-1.md) |
-| 2 | Named groups, live stage previews, switching and durable recovery | Advanced scope implemented | [Workspaces & Stage](phases/phase-2.md) |
+| 2 | Named groups, separate live stage strip, reserved canvas and durable recovery | Implemented; broader visual/hardware qualification pending | [Workspaces & Stage](phases/phase-2.md) |
 | 3 | Live DWM cards, search, display filtering/grouping and display moves/undo | Advanced scope implemented | [Mission Control](phases/phase-3.md) |
 | 4 | In-app and floating docks, persistent pins, explicit app launch and auto-hide | Advanced scope implemented | [FlowDock](phases/phase-4.md) |
 | 5 | FlowDesk event center, opt-in native delivery and validated activation | Implemented and redesigned | [Notifications](phases/phase-5.md) |

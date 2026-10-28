@@ -8,6 +8,10 @@
 
 Detect eligible visible top-level windows; position selected windows in 1–4 columns; save a single layout; preview and apply restore; undo one successful layout operation. The redesigned WinUI shell includes adaptive navigation, appearance settings, and a basic tray icon. v0.5.0 adds event-driven background inventory refresh.
 
+## v0.6.0 integration
+
+FlowControl uses the shared glass list/control resources, clearer page hierarchy and native page entrances. Split/preview/restore/undo behavior is retained. See the [glass redesign guide](../glass-redesign.md).
+
 ## Use the feature
 
 1. Open FlowControl and choose Refresh.

@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "version": "0.6",
+  "themes": {
+    "Light": {
+      "canvas1": "#F0F5FC",
+      "canvas2": "#E8EDF8",
+      "surface": "#F9FBFE",
+      "text": "#182133",
+      "secondary": "#536176",
+      "accent": "#246BEE",
+      "stroke": "#CAD5E8",
+      "success": "#137B61",
+      "onAccent": "#FFFFFF",
+      "tint": "#99FFFFFF"
+    },
+    "Dark": {
+      "canvas1": "#101620",
+      "canvas2": "#20283D",
+      "surface": "#232D40",
+      "text": "#F3F6FD",
+      "secondary": "#AFBCD2",
+      "accent": "#79A9FF",
+      "stroke": "#44536E",
+      "success": "#7DDDC0",
+      "onAccent": "#101620",
+      "tint": "#55232D40"
+    }
+  },
+  "radii": {
+    "control": 12,
+    "surface": 24
+  },
+  "spacing": {
+    "small": 8,
+    "medium": 16,
+    "large": 24
+  },
+  "motion": {
+    "feedbackMs": 140,
+    "enterMs": 220,
+    "stageMs": 320,
+    "reducedMs": 0
+  },
+  "platform": {
+    "framework": "WinUI 3",
+    "surface": "In-app Acrylic with native fallback",
+    "base": "Mica and theme-aware canvas",
+    "font": "Segoe UI Variable",
+    "figmaFont": "Inter"
+  }
+}

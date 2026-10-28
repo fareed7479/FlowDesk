@@ -8,6 +8,10 @@
 
 Live DWM thumbnail cards, title/app search, automatic event-driven refresh, display grouping/filtering, window activation, and display move with undo. Preview relationships are released when cards/pages unload.
 
+## v0.6.0 integration
+
+Overview uses the shared glass resources. DWM previews now coordinate with actual ancestor motion before rendering, including scroll clipping and settling. See the [glass redesign guide](../glass-redesign.md).
+
 ## Use the feature
 
 Open Overview & FlowDock. Search for an app/title and filter a display. Select a window card, choose a target display, then Move selected to display; Undo display move restores its prior rectangle. Open activates a window. Search narrower if more than 36 results match.

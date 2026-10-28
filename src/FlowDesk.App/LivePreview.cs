@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 namespace FlowDesk.App;
 internal sealed class LivePreview : UserControl,IDisposable {
-    private readonly nint source;
+    private readonly nint source,destination;
     private LiveThumbnail? thumbnail;
     private bool failed,attached;
     private Rect? previous;
@@ -15,14 +15,14 @@ internal sealed class LivePreview : UserControl,IDisposable {
     private readonly DispatcherTimer timer=new(){Interval=TimeSpan.FromMilliseconds(80)};
     private DateTimeOffset ready;
     internal bool Registered=>thumbnail?.Registered==true;
-    internal LivePreview(nint source,double height=140) {
-        this.source=source;Height=height;Margin=new Thickness(0,0,0,10);
+    internal LivePreview(nint source,double height=140,nint destination=0) {
+        this.source=source;this.destination=destination==0?Program.MainHandle:destination;Height=height;Margin=new Thickness(0,0,0,10);
         Content=new TextBlock{Text="Live preview · unavailable when minimized or protected",TextWrapping=TextWrapping.Wrap,Opacity=.5,Margin=new Thickness(12),VerticalAlignment=VerticalAlignment.Center,HorizontalAlignment=HorizontalAlignment.Center,FontSize=12};
         Design.Name(this,"Live window preview");
         Loaded+=(_,_)=>Attach();LayoutUpdated+=(_,_)=>Update();Unloaded+=(_,_)=>Dispose();timer.Tick+=(_,_)=>Update();
     }
     private void Attach() {
-        if(attached)return;attached=true;ready=DateTimeOffset.UtcNow.AddMilliseconds(500);
+        if(attached)return;attached=true;ready=DateTimeOffset.UtcNow;
         DependencyObject? parent=this;
         while((parent=Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(parent)) is not null)if(parent is ScrollViewer scroll){scrollers.Add(scroll);scroll.ViewChanging+=Changing;scroll.ViewChanged+=Changed;}
         timer.Start();
@@ -37,7 +37,7 @@ internal sealed class LivePreview : UserControl,IDisposable {
     private void Update() {
         if(!attached || !IsLoaded || failed || XamlRoot is null || ActualWidth<2)return;
         try {
-            if(moving.Count>0 || DateTimeOffset.UtcNow<ready){Hide();return;}
+            if(moving.Count>0 || DateTimeOffset.UtcNow<ready || SurfaceMotion.Moving(this)){Hide();return;}
             var point=TransformToVisual(null).TransformPoint(new global::Windows.Foundation.Point(0,0));
             bool visible=true;DependencyObject? parent=this;
             while((parent=Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(parent)) is not null) {
@@ -47,7 +47,7 @@ internal sealed class LivePreview : UserControl,IDisposable {
             var scale=XamlRoot.RasterizationScale;
             var rect=new Rect((int)(point.X*scale),(int)(point.Y*scale),Math.Max(1,(int)(ActualWidth*scale)),Math.Max(1,(int)(ActualHeight*scale)));
             if(!visible){Hide();return;}
-            thumbnail??=new LiveThumbnail(Program.MainHandle,source);
+            thumbnail??=new LiveThumbnail(destination,source);
             if(previous!=rect){thumbnail.Update(rect,true);previous=rect;}
         }catch(Exception ex)when(ex is System.Runtime.InteropServices.COMException or ArgumentException or InvalidOperationException){failed=true;Dispose();}
     }

@@ -5,7 +5,7 @@ public partial class App : Application {
     private static MainWindow? window;
     private static readonly object gate=new();
     private static Guid? pendingNotice;
-    public App() {InitializeComponent();}
+    public App() {UnhandledException+=(_,e)=>{try{System.IO.Directory.CreateDirectory(Program.DataDirectory);System.IO.File.WriteAllText(System.IO.Path.Combine(Program.DataDirectory,"startup-error.log"),e.Exception.ToString());}catch{}};InitializeComponent();}
     internal static void OpenWindow() {lock(gate){window?.DispatcherQueue.TryEnqueue(()=>window?.BringForward());}}
     internal static void OpenNotice(Guid id) {
         lock(gate) {if(window is null) {pendingNotice=id;return;}window.DispatcherQueue.TryEnqueue(()=>window?.ShowNotice(id));}

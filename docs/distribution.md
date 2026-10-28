@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Phase 8](phases/phase-8.md)
 
-The v0.5.0 tooling creates a self-contained Windows x64 package and supports per-user installation, explicit local updates, rollback, and data-preserving removal. Trusted signing, clean-machine qualification, store publication, and a network update service remain separate release work.
+The v0.6.0 tooling creates a self-contained Windows x64 package and supports per-user installation, explicit local updates, rollback, and data-preserving removal. Trusted signing, clean-machine qualification, store publication, and a network update service remain separate release work.
 
 ## Build a package
 
@@ -12,7 +12,7 @@ Run the application checks first, then use PowerShell 7:
 pwsh -ExecutionPolicy Bypass -File .\scripts\package.ps1
 ```
 
-Output: `.cache/dist/FlowDesk-0.5.0-win-x64.zip` and a companion `.sha256` file. The archive includes the desktop app, native host, extension sources, and lifecycle scripts. Tools, caches, runtime data, and pairing tokens are excluded. Existing artifacts of the same version are not overwritten.
+Output: `.cache/dist/FlowDesk-0.6.0-win-x64.zip` and a companion `.sha256` file. The archive includes the desktop app, native host, extension sources, and lifecycle scripts. Tools, caches, runtime data, and pairing tokens are excluded. Existing artifacts of the same version are not overwritten.
 
 No certificate is generated or trusted automatically. To sign, supply an existing current-user code-signing certificate with `-CertificateThumbprint`; optional `-TimestampServer` selects a timestamp service. Without that credential the result is an unsigned development package. Keep private keys outside the repository.
 
@@ -21,7 +21,7 @@ No certificate is generated or trusted automatically. To sign, supply an existin
 Run the checked-in installer with a local ZIP and its independently obtained expected SHA256:
 
 ```powershell
-pwsh -ExecutionPolicy Bypass -File .\scripts\install-flowdesk.ps1 -PackagePath .\.cache\dist\FlowDesk-0.5.0-win-x64.zip -Sha256 '<expected 64-character SHA256>' -InstallRoot D:\Apps\FlowDesk
+pwsh -ExecutionPolicy Bypass -File .\scripts\install-flowdesk.ps1 -PackagePath .\.cache\dist\FlowDesk-0.6.0-win-x64.zip -Sha256 '<expected 64-character SHA256>' -InstallRoot D:\Apps\FlowDesk
 ```
 
 The hash verifies integrity against the supplied value; it does not authenticate the publisher. Add `-RequireSignature` when using a trusted signed package. Unsigned development artifacts fail that option.

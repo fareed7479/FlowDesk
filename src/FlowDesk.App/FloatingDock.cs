@@ -31,7 +31,7 @@ internal sealed class FloatingDock : Window {
         var panel=new StackPanel{Spacing=6,Padding=new Thickness(12,8,12,8)};
         panel.Children.Add(new TextBlock{Text="F L O W D O C K",FontSize=10,Opacity=.65,HorizontalAlignment=HorizontalAlignment.Center});
         panel.Children.Add(new ScrollViewer{Content=apps,HorizontalScrollMode=ScrollMode.Enabled,HorizontalScrollBarVisibility=ScrollBarVisibility.Hidden,VerticalScrollMode=ScrollMode.Disabled});
-        var root=Design.Surface(panel);root.Padding=new Thickness(0);root.RequestedTheme=ElementTheme.Dark;Content=root;
+        var root=Design.Surface(panel,true);root.Padding=new Thickness(0);root.RequestedTheme=AppData.LoadTheme();Content=root;
         timer.Tick+=(_,_)=>Tick();timer.Start();Closed+=(_,_)=>{closed=true;timer.Stop();};Refresh();
     }
     internal void ShowDock(){Position(false);AppWindow.Show(false);}

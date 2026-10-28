@@ -2,12 +2,13 @@
 
 [Repository home](../README.md) · [Roadmap](roadmap.md) · [Release history](../CHANGELOG.md)
 
-FlowDesk v0.5.0 is an advanced desktop preview. This documentation separates implemented scope, observed test results, and unfinished product work.
+FlowDesk v0.6.0 is an advanced desktop preview. This documentation separates implemented scope, observed test results, and unfinished product work.
 
 ## Start here
 
 | Guide | What it covers |
 | --- | --- |
+| [Glass redesign](glass-redesign.md) | Design system, staging workflows, tools and verification boundaries |
 | [Getting started](getting-started.md) | Windows prerequisites, local SDK, build, launch, and troubleshooting |
 | [Architecture and data](architecture.md) | Project responsibilities, native integrations, and local persistence |
 | [Verification](verification.md) | Commands, recorded results, and test boundaries |
@@ -23,7 +24,7 @@ FlowDesk v0.5.0 is an advanced desktop preview. This documentation separates imp
 | :---: | --- | --- |
 | 0 | [Environment and toolchain](phases/phase-0.md) | Audited Windows development machine |
 | 1 | [Window engine and FlowControl](phases/phase-1.md) | Native prototype with preview and undo |
-| 2 | [Workspaces and Stage Manager](phases/phase-2.md) | Live group previews, switching and durable recovery |
+| 2 | [Workspaces and Stage Manager](phases/phase-2.md) | Native stage strip, live previews, switching and durable recovery |
 | 3 | [Mission Control](phases/phase-3.md) | Live cards, event-driven refresh and display organization |
 | 4 | [FlowDock](phases/phase-4.md) | Persistent pins, app cycling and floating auto-hide dock |
 | 5 | [Notifications](phases/phase-5.md) | FlowDesk event center and opt-in Windows delivery |

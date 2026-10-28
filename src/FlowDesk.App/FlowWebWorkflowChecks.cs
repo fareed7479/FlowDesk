@@ -14,7 +14,7 @@ namespace FlowDesk.App;
 internal static class FlowWebWorkflowChecks {
     private static readonly List<string> passed=new();
     private static string Report=>Path.Combine(Program.ProjectRoot(),".cache","flowweb-desktop-result.json");
-    private static void State(string stage,string? error=null)=>File.WriteAllText(Report,JsonSerializer.Serialize(new{stage,passed,error}));
+    private static void State(string stage,string? error=null){File.WriteAllText(Report+".tmp",JsonSerializer.Serialize(new{stage,passed,error}));File.Move(Report+".tmp",Report,true);}
     private static void Check(bool value,string label){if(!value)throw new InvalidOperationException(label);passed.Add(label);State("running");}
     private static async Task Wait(Func<bool> value,int seconds=40){for(int i=0;i<seconds*10;i++){if(value())return;await Task.Delay(100);}throw new TimeoutException("FlowWeb browser workflow timed out.");}
     private static async Task Click(Button button){((IInvokeProvider)new ButtonAutomationPeer(button).GetPattern(PatternInterface.Invoke)).Invoke();await Task.Delay(200);}

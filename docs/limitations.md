@@ -4,6 +4,10 @@
 
 These boundaries apply to v0.5.0. Advanced desktop features are implemented; production qualification is incomplete.
 
+## Glass design and motion
+
+The shared material system and native stage strip are implemented. Full Figma parity and manual visual qualification remain pending Figma quota and Windows inspection-helper limitations. Motion animates FlowDesk surfaces; other applications move through native positioning APIs. Minimized/protected previews may freeze or be unavailable. The strip reserves space only on sufficiently wide displays and does not change the global Windows work area. Read the [redesign boundaries](glass-redesign.md).
+
 ## Desktop behavior
 
 The app uses a native navigation shell, theme-aware surfaces, live window previews, and optional floating dock. Live DWM content can be unavailable for minimized/protected windows; cards provide a fallback. The overview renders at most 36 matching preview cards, so narrow search for larger inventories.

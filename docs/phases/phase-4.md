@@ -8,6 +8,10 @@
 
 An in-app dock and a separate floating native window show running apps and persistent app pins. Repeated clicks cycle running windows; a closed pinned executable launches only after an explicit click. Optional auto-hide collapses the floating dock to an edge strip.
 
+## v0.6.0 integration
+
+The floating dock follows the saved appearance and uses Desktop Acrylic with a single tint layer. Pinning, cycling and idle auto-hide behavior are retained. See the [glass redesign guide](../glass-redesign.md).
+
 ## Use the feature
 
 Pin an app from a window card. Use Show floating dock in Overview & FlowDock, optionally enabling auto-hide. Hover over the edge strip to reveal it; Hide floating dock closes it. Unpin from the app's window card or the saved pin-management list, including closed apps. Choose a display before opening the dock to place it there; the selected device preference persists.

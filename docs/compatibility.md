@@ -4,7 +4,7 @@
 
 Recorded on Windows 11 x64 build 26200. “Passed” below describes controlled checks on this machine, not universal application support.
 
-| Scenario | Evidence in v0.5.0 |
+| Scenario | Evidence in v0.6.0 |
 | --- | --- |
 | Standard WinForms windows | Native layout, undo, focus/fullscreen and restoration checks passed |
 | Borderless app window | Inventory, movement and restoration fixture checks passed |
@@ -16,6 +16,8 @@ Recorded on Windows 11 x64 build 26200. “Passed” below describes controlled 
 | Display metadata and DPI | Actual monitor inventory, primary/work-area metadata and per-window DPI queried |
 | Negative coordinates / offscreen layout | Synthetic geometry assertions; not a substitute for physical mixed-monitor tests |
 | Live preview | Real DWM relationships registered by visible WinUI cards |
+| Stage strip | Separate native window, real DWM registration, reserved space, serialized switching and restoration checked |
+| Reduced motion | Persisted preference and no-animation path checked; physical OS setting coverage remains pending |
 | Floating dock | Real owned window, persistent pins, auto-hide and clean close checked |
 | Chrome/Edge protocol separation | Authenticated simulated peers with overlapping tab IDs checked |
 | Browser end-to-end | Isolated Chromium extension → native host → WinUI controls checked |
